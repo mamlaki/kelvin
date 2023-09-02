@@ -2,7 +2,6 @@ import { useSession, signIn } from 'next-auth/react'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 
-
 export default function Login() {
     const { data: session } = useSession()
 
