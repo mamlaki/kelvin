@@ -1,10 +1,12 @@
 import { useSession, signIn } from 'next-auth/react'
+import { red } from '@mui/material/colors'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 
 
 export default function Login() {
     const { data: session } = useSession()
+    const color = red[500]
 
     return (
         <>
@@ -26,6 +28,15 @@ export default function Login() {
                         onClick={() => signIn('github')}
                         >
                             Sign In with GitHub
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                        variant='contained'
+                        color='error'
+                        onClick={() => signIn('discord')}
+                        >
+                            Sign In with Discord
                         </Button>
                     </Grid>
                 </Grid>
