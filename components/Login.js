@@ -45,10 +45,20 @@ export default function Login() {
                             Sign In with Twitter
                         </Button>
                     </Grid>
+                    <Grid item>
+                        <Button
+                        variant='contained'
+                        color='success'
+                        onClick={() => signIn('credentials', { username: 'your-username', password: 'your-password' })}
+                        >
+                            Sign In
+                        </Button>
+                    </Grid>
                 </Grid>
             ) : (
-                <h1>Welcome, {session.user.name}!</h1>
+                <h1>Welcome, {session.user.name}</h1>
             )}
+            {console.log("Session data: ", session)}
         </>
     )
 }

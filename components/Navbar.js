@@ -72,6 +72,8 @@ export default function Navbar() {
   // Snackbar Stateful Variables
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
+  const [isSignOutPending, setIsSignOutPending] = useState(false)
+
 
   // Menu Variables
   const [anchorEl, setAnchorEl] = useState(null);

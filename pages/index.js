@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-// import Login from '@/components/Login'
+import Login from '@/components/Login'
 import Navbar from '@/components/Navbar'
 
 
@@ -19,6 +19,7 @@ export default function Home() {
         <Navbar />
       </header>
       <main>
+        <Login />
       </main>
       <footer>
 
