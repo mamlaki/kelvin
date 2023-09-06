@@ -28,7 +28,20 @@ export async function connectToDatabase() {
 }
 
 export async function registerUser(db, username, hashedPassword, email) {
-  const collection = db.collection('users')
-  const user = await collection.insertOne({ username, password: hashedPassword, email })
-  return user
+  console.log('REACHED REGISTER USE FUNC')
+  try {
+    const collection = db.collection('users')
+    const result = await collection.insertOne({ username, password: hashedPassword, email })
+    console.log('InsertOne Result: ', result)
+    console.log('Result.ops: ', result.ops)
+    if (result.acknowledged) {
+      return { _id: result.insertedId }
+    } else {
+      console.error('Error inserting user: Insert operation not acknowledged.')
+      return null
+    }
+  } catch (error) {
+    console.error('FULL Error inserting user: ', error)
+    return null
+  }
 }
