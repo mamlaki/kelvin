@@ -10,6 +10,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import Paper from '@mui/material/Paper'
+import ButtonBase from '@mui/material/ButtonBase'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 
 import { blue } from '@mui/material/colors'
 import { useSession } from 'next-auth/react';
@@ -24,46 +30,48 @@ import { useEffect } from 'react';
 import { useWeather } from '@/utils/weathercontext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 
+import citiestest from '../utils/jsondata/citiestest'
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
+// const Search = styled('div')(({ theme }) => ({
+//   position: 'relative',
+//   borderRadius: theme.shape.borderRadius,
+//   backgroundColor: alpha(theme.palette.common.white, 0.15),
+//   '&:hover': {
+//     backgroundColor: alpha(theme.palette.common.white, 0.25),
+//   },
+//   marginRight: theme.spacing(2),
+//   marginLeft: 0,
+//   width: '100%',
+//   [theme.breakpoints.up('sm')]: {
+//     marginLeft: theme.spacing(3),
+//     width: 'auto',
+//   },
+// }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
+// const SearchIconWrapper = styled('div')(({ theme }) => ({
+//   padding: theme.spacing(0, 2),
+//   height: '100%',
+//   position: 'absolute',
+//   pointerEvents: 'none',
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'center',
+// }));
+
+// const StyledInputBase = styled(InputBase)(({ theme }) => ({
+//   color: 'inherit',
+//   '& .MuiInputBase-input': {
+//     padding: theme.spacing(1, 1, 1, 0),
+//     // vertical padding + font size from searchIcon
+//     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+//     transition: theme.transitions.create('width'),
+//     width: '100%',
+//     [theme.breakpoints.up('md')]: {
+//       width: '20ch',
+//     },
+//   },
+// }));
 
 const navBlue = blue[500]
 
@@ -84,8 +92,11 @@ export default function Navbar() {
   const isMenuOpen = Boolean(anchorEl);
 
   // Weather and city search stateful variables
-  const [city, setCity] = useState('')
+  // const [city, setCity] = useState('')
   // const [weatherData, setWeatherData] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [suggestions, setSuggestions] = useState([])
+  const [selectedCity, setSelectedCity] = useState('')
 
   // Snackbar functions
   const handleSnackBarClose = (event, reason) => {
@@ -164,6 +175,30 @@ export default function Navbar() {
     }
   }
 
+  // Search suggestions functionality
+  useEffect(() => {
+    if (searchTerm) {
+      const filteredCities = citiestest.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase()))
+      setSuggestions(filteredCities)
+    } else {
+      setSuggestions([])
+    }
+  }, [searchTerm])
+
+  const handleSearchInputChange = (event) => {
+    setSearchTerm(event.target.value)
+  }
+
+  const handleSuggestionClick = (cityName) => {
+    setSelectedCity(cityName)
+    console.log(`Attempting to fetch weather for: ${cityName}`)
+    if (cityName) {
+      getWeatherData(cityName)
+      .then(data => setWeatherData(data))
+      .catch(error => console.error('Failed to fetch weather: ', error))
+    }
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -209,7 +244,33 @@ export default function Navbar() {
                 Kelvin
             </Typography>
           </Link>
-          <Search>
+          <Autocomplete 
+            id='free-solo-demo'
+            freeSolo
+            options={suggestions.map((option) => option)}
+            renderInput={(params) => (
+              <TextField {...params}
+                label='Enter City'
+                sx={{ width: 300, backgroundColor: 'white' }}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <SearchIcon />
+                      {params.InputProps.startAdornment}
+                    </>
+                  )
+                }}
+                onChange={handleSearchInputChange}
+                onKeyDown={handleKeyPress}
+              />
+            )}
+            onChange={(event, newValue) => {
+              setSelectedCity(newValue)
+              handleSuggestionClick(newValue)
+            }}
+          />
+          {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -217,10 +278,30 @@ export default function Navbar() {
               placeholder="Enter city"
               inputProps={{ 'aria-label': 'search' }}
               // value={ city }
-              // onChange={ (event) => setCity(event.target.value) }
+              onChange={ handleSearchInputChange }
               onKeyDown={ handleKeyPress }
             />
-          </Search>
+            {suggestions.length > 0 && (
+              <Paper
+                elevation={3}
+                style={{ position: 'absolute', width: '100%' }}
+              >
+                <List>
+                  {suggestions.map((suggestion, index) => (
+                    <ButtonBase
+                      key={index}
+                      onClick={ () => handleSuggestionClick(suggestion) }
+                    >
+                      <ListItem>
+                        {suggestion}
+                      </ListItem>
+                    </ButtonBase>
+                    
+                  ))}
+                </List>
+              </Paper>
+            )}
+          </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { md: 'flex' } }}>
             <IconButton
@@ -240,7 +321,7 @@ export default function Navbar() {
       {renderMenu}
       <Snackbar 
         open={snackBarOpen} 
-        autoHideDuration={2000} 
+        autoHideDuration={5000} 
         onClose={handleSnackBarClose}
       >
         <MuiAlert
