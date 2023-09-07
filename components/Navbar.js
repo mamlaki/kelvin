@@ -21,6 +21,7 @@ import MuiAlert from '@mui/material/Alert'
 import { useState } from 'react';
 import { useEffect } from 'react';
 
+import { useWeather } from '@/utils/weathercontext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 
 
@@ -69,6 +70,7 @@ const navBlue = blue[500]
 export default function Navbar() {
   // Session & Router 
   const { data: session } = useSession()
+  const { setWeatherData } = useWeather()
   const router = useRouter()
   const [lastSessionState, setLastSessionState] = useState(null)
 
@@ -83,7 +85,7 @@ export default function Navbar() {
 
   // Weather and city search stateful variables
   const [city, setCity] = useState('')
-  const [weatherData, setWeatherData] = useState(null)
+  // const [weatherData, setWeatherData] = useState(null)
 
   // Snackbar functions
   const handleSnackBarClose = (event, reason) => {
@@ -143,14 +145,23 @@ export default function Navbar() {
   };
 
   // Fetch weather data
-  const fetchWeather = () => {
-    getWeatherData(city)
-      .then((data) => {
-        setWeatherData(data)
-        console.log('Weather Data: ', data)
-      }).catch((error) => {
-        console.error('Failed to fetch weather: ', error)
-      })
+  // const fetchWeather = () => {
+  //   getWeatherData(city)
+  //     .then((data) => {
+  //       setWeatherData(data)
+  //       console.log('Weather Data: ', data)
+  //     }).catch((error) => {
+  //       console.error('Failed to fetch weather: ', error)
+  //     })
+  // }
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      const cityName = event.target.value
+      getWeatherData(cityName)
+        .then(data => setWeatherData(data))
+        .catch(error => console.error('Failed to fetch weather: ', error))
+    }
   }
 
   const menuId = 'primary-search-account-menu';
@@ -205,14 +216,9 @@ export default function Navbar() {
             <StyledInputBase
               placeholder="Enter city"
               inputProps={{ 'aria-label': 'search' }}
-              value={ city }
-              onChange={ (event) => setCity(event.target.value) }
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  fetchWeather()
-                  event.preventDefault()
-                }
-              }}
+              // value={ city }
+              // onChange={ (event) => setCity(event.target.value) }
+              onKeyDown={ handleKeyPress }
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />

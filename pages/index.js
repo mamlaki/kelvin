@@ -3,11 +3,13 @@ import { Inter } from 'next/font/google'
 import Login from '@/components/Login'
 import Navbar from '@/components/Navbar'
 import TestWeatherFetch from '@/components/TestWeatherFetch'
-
+import { useWeather } from '@/utils/weathercontext'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const { weatherData } = useWeather()
+
   return (
     <>
       <Head>
@@ -20,6 +22,13 @@ export default function Home() {
       </header>
       <main>
         {/* <TestWeatherFetch /> */}
+        {weatherData && (
+          <div>
+            <h1>{ weatherData.name }</h1>
+            <h2>{ weatherData.weather[0].description }</h2>
+            <h3>{ Math.round(weatherData.main.temp - 273.15) }ºC</h3>
+          </div>
+        )}
       </main>
       <footer>
 

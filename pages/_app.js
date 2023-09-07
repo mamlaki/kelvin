@@ -6,13 +6,16 @@ import '@fontsource/roboto/700.css';
 
 // Other
 import { SessionProvider } from "next-auth/react"
+import { WeatherProvider } from '@/utils/weathercontext';
 import Navbar from '@/components/Navbar';
 
 export default function App({ Component, pageProps }) {
     return (
       <SessionProvider session={pageProps.session}>
-        <Navbar />
-        <Component {...pageProps}/>
+        <WeatherProvider>
+          <Navbar />
+          <Component {...pageProps}/>
+        </WeatherProvider>
       </SessionProvider>
     )
 }
