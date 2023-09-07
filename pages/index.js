@@ -19,7 +19,7 @@ export default function Home() {
       <header>
       </header>
       <main>
-        <TestWeatherFetch />
+        {/* <TestWeatherFetch /> */}
       </main>
       <footer>
 

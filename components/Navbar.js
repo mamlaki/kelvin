@@ -21,6 +21,8 @@ import MuiAlert from '@mui/material/Alert'
 import { useState } from 'react';
 import { useEffect } from 'react';
 
+import { getWeatherData } from '@/utils/api/weatherapi';
+
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -79,6 +81,10 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
+  // Weather and city search stateful variables
+  const [city, setCity] = useState('')
+  const [weatherData, setWeatherData] = useState(null)
+
   // Snackbar functions
   const handleSnackBarClose = (event, reason) => {
     if (reason === 'clickaway') return
@@ -136,6 +142,17 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
+  // Fetch weather data
+  const fetchWeather = () => {
+    getWeatherData(city)
+      .then((data) => {
+        setWeatherData(data)
+        console.log('Weather Data: ', data)
+      }).catch((error) => {
+        console.error('Failed to fetch weather: ', error)
+      })
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -186,8 +203,16 @@ export default function Navbar() {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search…"
+              placeholder="Enter city"
               inputProps={{ 'aria-label': 'search' }}
+              value={ city }
+              onChange={ (event) => setCity(event.target.value) }
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  fetchWeather()
+                  event.preventDefault()
+                }
+              }}
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />
