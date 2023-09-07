@@ -68,10 +68,12 @@ export default function Navbar() {
   // Session & Router 
   const { data: session } = useSession()
   const router = useRouter()
+  const [lastSessionState, setLastSessionState] = useState(null)
 
   // Snackbar stateful variables
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
+  const [initialLoad, setInitialLoad] = useState(true)
 
   // Menu stateful variables 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -100,11 +102,20 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      if (url === '/' && session) {
-        setSnackBarMessage('Signed in successfully')
-        setSnackBarOpen(true)
-      } else if (url === '/' && !session) {
-        setSnackBarMessage('Signed out successfully')
+      if (initialLoad) {
+        setInitialLoad(false)
+        return
+      }
+
+      if (url === '/' && lastSessionState !== session) {
+        setLastSessionState(session)
+
+        if (session) {
+          setSnackBarMessage('Signed in successfully')
+        } else {
+          setSnackBarMessage('Signed out successfully')
+        }
+
         setSnackBarOpen(true)
       }
     }
@@ -114,7 +125,7 @@ export default function Navbar() {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [session, router.events])
+  }, [session, router.events, lastSessionState])
 
   // Menu functions
   const handleProfileMenuOpen = (event) => {
@@ -198,7 +209,7 @@ export default function Navbar() {
       {renderMenu}
       <Snackbar 
         open={snackBarOpen} 
-        autoHideDuration={6000} 
+        autoHideDuration={2000} 
         onClose={handleSnackBarClose}
       >
         <MuiAlert
