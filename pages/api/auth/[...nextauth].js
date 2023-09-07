@@ -31,13 +31,18 @@ export default NextAuth({
             id: 'credentials',
             name: 'credentials',
             credentials: {
-                username: { label: 'Username', type: 'text', placeholder: 'Melek...' },
+                userIdentifier: { label: 'Username or Email', type: 'text', placeholder: 'Melek or melek@example.com' },
                 password: { label: 'Password', type: 'password' }
             },
             async authorize(credentials) {
                 const { db } = await connectToDatabase()
 
-                const existingUser = await db.collection('users').findOne({ username: credentials.username })
+                const existingUser = await db.collection('users').findOne({ 
+                    $or: [
+                        { username: credentials.userIdentifier },
+                        { email: credentials.userIdentifier }
+                    ]
+                })
 
                 console.log('fetched user: ', existingUser)
 
@@ -49,18 +54,10 @@ export default NextAuth({
                     if (isValid) {
                         return { id: existingUser._id, name: existingUser.username, email: existingUser.email }
                     } else {
-                        return null
+                        throw new Error('Invalid Password.')
                     }
                 } else {
-                    // Register a new user if the username doesn't exist
-                    const hashedPassword = await bcrypt.hash(credentials.password, 10)
-                    const newUser = await registerUser(db, credentials.username, hashedPassword, 'test')
-                    
-                    if (newUser && newUser._id) {
-                        return { id: newUser._id, name: credentials.username, email: 'test'}
-                    }
-
-                    return null
+                    throw new Error('User does not exist.')
                 }
             }
         })
