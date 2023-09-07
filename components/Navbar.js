@@ -69,63 +69,54 @@ export default function Navbar() {
   const { data: session } = useSession()
   const router = useRouter()
 
-  // Snackbar Stateful Variables
+  // Snackbar stateful variables
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
-  const [isSignOutPending, setIsSignOutPending] = useState(false)
 
-
-  // Menu Variables
+  // Menu stateful variables 
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  // Snackbar Functionality
-  const handleSnackBarOpen = (message) => {
-    console.log('snack open')
-    setSnackBarMessage(message)
-    setSnackBarOpen(true)
-  }
-
+  // Snackbar functions
   const handleSnackBarClose = (event, reason) => {
-    console.log('snack close')
     if (reason === 'clickaway') return
     setSnackBarOpen(false)
   }
 
   const handleSignInClick = () => {
-    router.push('/api/auth/signin')
+    router.push('/signin')
   }
 
-  const handleSignOutClick = () => {
-    setIsSignOutPending(true)
-    handleSnackBarOpen('Signing out...')
-
+  const handleSignOutClick = async () => {
+    setSnackBarMessage('Signing out...')
+    setSnackBarOpen(true)
+    await signOut({ redirect: false })
+    setSnackBarMessage('Signed out successfully')
     setTimeout(() => {
-      signOut({ redirect: true, callbackUrl: '/' })
-    }, 1000)    
+      setSnackBarOpen(false)
+      router.push('/')
+    }, 1000)
   }
 
-  // useEffect(() => {
-  //   console.log("useEffect registered");
-    
-  //   const handleRouteChange = (url) => {
-  //     console.log(`Route changed to ${url}, session is: `, session);
-  //     if (url === '/') {
-  //       if (session) {
-  //         handleSnackBarOpen('Signed in successfully!')
-  //       }
-  //     }
-  //   }
-  
-  //   router.events.on('routeChangeComplete', handleRouteChange);
-  
-  //   return () => {
-  //     router.events.off('routeChangeComplete', handleRouteChange);
-  //   }
-  // }, [session, router.events]);
-  
-  
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (url === '/' && session) {
+        setSnackBarMessage('Signed in successfully')
+        setSnackBarOpen(true)
+      } else if (url === '/' && !session) {
+        setSnackBarMessage('Signed out successfully')
+        setSnackBarOpen(true)
+      }
+    }
 
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [session, router.events])
+
+  // Menu functions
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
