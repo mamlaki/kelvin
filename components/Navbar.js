@@ -51,6 +51,25 @@ export default function Navbar() {
   const [enterKeyPressed, setEnterKeyPressed] = useState(false)
   const [suggestionClicked, setSuggestionClicked] = useState(false)
 
+  const debounceTimeout = useRef(null)
+
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value)
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value)
+      }, delay)
+      return () => {
+        clearTimeout(handler)
+      }
+    }, [value])
+
+    return debouncedValue
+  }
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 100)
+
   useEffect(() => {
     console.log('Updated weatherData: ', weatherData)
   }, [weatherData])
@@ -104,14 +123,8 @@ export default function Navbar() {
   }, [session, router.events, lastSessionState])
 
   // Menu functions
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
+  const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget)
+  const handleMenuClose = () => setAnchorEl(null)
 
   const fetchWeatherData = (cityName) => {
     console.log('Attempting to fetch: ', cityName, 'Last action was: ', lastActionRef.current)
@@ -142,7 +155,11 @@ export default function Navbar() {
       
   }
 
-  let debounceTimeout = null
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      fetchWeatherData(debouncedSearchTerm)
+    }
+  }, [debouncedSearchTerm])
 
   const lastActionRef = useRef(null)
 
@@ -169,11 +186,10 @@ export default function Navbar() {
   }, [searchTerm])
 
   const handleSearchInputChange = (event) => {
-    clearTimeout(debounceTimeout)
+    clearTimeout(debounceTimeout.current)
 
-    debounceTimeout = setTimeout(() => {
+    debounceTimeout.current = setTimeout(() => {
       setSearchTerm(event.target.value)
-      // setSuggestionClicked(false)
     }, 100)
   }
 
