@@ -18,9 +18,12 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
   const { weatherData, setWeatherData } = useWeather()
 
-  const handleDelete = (cityName) => {
-    const updatedWeatherData = weatherData.filter(data => data.name !== cityName)
-    setWeatherData(updatedWeatherData)
+  const handleDelete = (cityName, index) => {
+    setWeatherData(prevWeatherData => {
+      return prevWeatherData.filter((data, i) => i !== index)
+    })
+    // const updatedWeatherData = weatherData.filter(data => data.name !== cityName)
+    // setWeatherData(updatedWeatherData)
   }
 
   return (
@@ -40,7 +43,7 @@ export default function Home() {
                 <WeatherCard 
                   key={index}
                   data={data}
-                  onDelete={() => handleDelete(data.name)}
+                  onDelete={() => handleDelete(data.name, index)}
                 />
               )
             })

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { useRef } from 'react';
 
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
@@ -24,7 +25,6 @@ import TextField from '@mui/material/TextField'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 
-
 import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
 
@@ -45,12 +45,11 @@ export default function Navbar() {
   const isMenuOpen = Boolean(anchorEl);
 
   // Weather and city search stateful variables
-  // const [city, setCity] = useState('')
-  // const [weatherData, setWeatherData] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
-  const [selectedCity, setSelectedCity] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [enterKeyPressed, setEnterKeyPressed] = useState(false)
+  const [suggestionClicked, setSuggestionClicked] = useState(false)
 
   useEffect(() => {
     console.log('Updated weatherData: ', weatherData)
@@ -115,6 +114,14 @@ export default function Navbar() {
 
 
   const fetchWeatherData = (cityName) => {
+    console.log('Attempting to fetch: ', cityName, 'Last action was: ', lastActionRef.current)
+    if (lastActionRef.current === cityName) {
+      console.log('Skipping duplicate fetch for: ', cityName)
+      return 
+    }
+    lastActionRef.current = cityName
+    console.log('Attempting to fetch ewather data for: ', cityName)
+
     if (weatherData.some(data => data.name === cityName)) {
       console.log('City already added.')
       return
@@ -123,15 +130,21 @@ export default function Navbar() {
     setIsProcessing(true)
     getWeatherData(cityName)
       .then(data => {
-        setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
+        if (!weatherData.some(existingData => existingData.name === data.name)) {
+          setWeatherData(prevWeatherData => [...prevWeatherData, data])
+        }
       })
       .catch(error => console.error('Failed to fetch weather: ', error))
       .finally(() => {
         setIsProcessing(false)
       })
+
+      
   }
 
   let debounceTimeout = null
+
+  const lastActionRef = useRef(null)
 
   const handleKeyPress = (event) => {
     if (isProcessing) return
@@ -139,6 +152,7 @@ export default function Navbar() {
 
     if (event.key === 'Enter') {
       fetchWeatherData(cityName)
+      setEnterKeyPressed(true)
     } else if (event.key === 'Escape') {
       event.target.blur()
     }
@@ -154,9 +168,6 @@ export default function Navbar() {
     }
   }, [searchTerm])
 
-
-  
-
   const handleSearchInputChange = (event) => {
     clearTimeout(debounceTimeout)
 
@@ -164,10 +175,6 @@ export default function Navbar() {
       setSearchTerm(event.target.value)
       // setSuggestionClicked(false)
     }, 100)
-  }
-
-  const handleSuggestionClick = (cityName) => {
-    fetchWeatherData(cityName)
   }
 
   const menuId = 'primary-search-account-menu';
@@ -236,10 +243,12 @@ export default function Navbar() {
                 onKeyDown={handleKeyPress}
               />
             )}
-            onChange={(event, newValue) => {
-              // setHasSelectedUsingKeyboard(false)
-              setSelectedCity(newValue)
-              handleSuggestionClick(newValue)
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !suggestionClicked) {
+                event.preventDefault()
+                console.log("Enter key was pressed but default prevented")
+                setEnterKeyPressed(true)
+              }
             }}
           />
           <Box sx={{ flexGrow: 1 }} />
