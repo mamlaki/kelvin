@@ -32,53 +32,12 @@ import { getWeatherData } from '@/utils/api/weatherapi';
 
 import citiestest from '../utils/jsondata/citiestest'
 
-
-// const Search = styled('div')(({ theme }) => ({
-//   position: 'relative',
-//   borderRadius: theme.shape.borderRadius,
-//   backgroundColor: alpha(theme.palette.common.white, 0.15),
-//   '&:hover': {
-//     backgroundColor: alpha(theme.palette.common.white, 0.25),
-//   },
-//   marginRight: theme.spacing(2),
-//   marginLeft: 0,
-//   width: '100%',
-//   [theme.breakpoints.up('sm')]: {
-//     marginLeft: theme.spacing(3),
-//     width: 'auto',
-//   },
-// }));
-
-// const SearchIconWrapper = styled('div')(({ theme }) => ({
-//   padding: theme.spacing(0, 2),
-//   height: '100%',
-//   position: 'absolute',
-//   pointerEvents: 'none',
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'center',
-// }));
-
-// const StyledInputBase = styled(InputBase)(({ theme }) => ({
-//   color: 'inherit',
-//   '& .MuiInputBase-input': {
-//     padding: theme.spacing(1, 1, 1, 0),
-//     // vertical padding + font size from searchIcon
-//     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-//     transition: theme.transitions.create('width'),
-//     width: '100%',
-//     [theme.breakpoints.up('md')]: {
-//       width: '20ch',
-//     },
-//   },
-// }));
-
 const navBlue = blue[500]
 
 export default function Navbar() {
   // Session & Router 
   const { data: session } = useSession()
-  const { setWeatherData } = useWeather()
+  const { weatherData, setWeatherData } = useWeather()
   const router = useRouter()
   const [lastSessionState, setLastSessionState] = useState(null)
 
@@ -97,6 +56,12 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
+  const [suggestionClicked, setSuggestionClicked] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  useEffect(() => {
+    console.log('Updated weatherData: ', weatherData)
+  }, [weatherData])
 
   // Snackbar functions
   const handleSnackBarClose = (event, reason) => {
@@ -155,24 +120,35 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
-  // Fetch weather data
-  // const fetchWeather = () => {
-  //   getWeatherData(city)
-  //     .then((data) => {
-  //       setWeatherData(data)
-  //       console.log('Weather Data: ', data)
-  //     }).catch((error) => {
-  //       console.error('Failed to fetch weather: ', error)
-  //     })
-  // }
+  let debounceTimeout = null
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      const cityName = event.target.value
-      getWeatherData(cityName)
-        .then(data => setWeatherData(data))
-        .catch(error => console.error('Failed to fetch weather: ', error))
-    }
+    event.stopPropagation()
+    if (isProcessing) return
+    clearTimeout(debounceTimeout)
+    debounceTimeout = setTimeout(() => {
+      if (event.key === 'Enter' && !suggestionClicked) {
+        console.log('HANDLE KEY PRESS TRIGGER')
+        const cityName = event.target.value
+
+        console.log('Checking weatherData: ', weatherData)
+
+        if (!weatherData.some(data => data.name === cityName)) {
+          setIsProcessing(true)
+          getWeatherData(cityName)
+          .then(data => {
+            setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
+            setSuggestionClicked(false)
+          })
+          .catch(error => console.error('Failed to fetch weather: ', error))
+          .finally(() => setIsProcessing(false))
+        } else {
+          console.log('City already added')
+        }
+      } else {
+        setSuggestionClicked(false)
+      }       
+    }, 100)
   }
 
   // Search suggestions functionality
@@ -185,17 +161,39 @@ export default function Navbar() {
     }
   }, [searchTerm])
 
+
+  
+
   const handleSearchInputChange = (event) => {
-    setSearchTerm(event.target.value)
+    clearTimeout(debounceTimeout)
+
+    debounceTimeout = setTimeout(() => {
+      setSearchTerm(event.target.value)
+      setSuggestionClicked(false)
+    }, 100)
   }
 
   const handleSuggestionClick = (cityName) => {
+    if (isProcessing) return
+    console.log('HANDLE SUGGESTION CLICK TRIGGER')
     setSelectedCity(cityName)
     console.log(`Attempting to fetch weather for: ${cityName}`)
-    if (cityName) {
-      getWeatherData(cityName)
-      .then(data => setWeatherData(prevWeatherData => [...prevWeatherData, data]))
-      .catch(error => console.error('Failed to fetch weather: ', error))
+
+    console.log('Checking weatherData: ', weatherData)
+    if (!weatherData.some(data => data.name === cityName)) {
+      setSuggestionClicked(true)
+      if (cityName) {
+        setIsProcessing(true)
+        getWeatherData(cityName)
+        .then(data => {
+          setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
+          setSuggestionClicked(false)
+        })
+        .catch(error => console.error('Failed to fetch weather: ', error))
+        .finally(() => setIsProcessing(false))
+      }
+    } else {
+      console.log('City already added.')
     }
   }
 
@@ -270,38 +268,6 @@ export default function Navbar() {
               handleSuggestionClick(newValue)
             }}
           />
-          {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Enter city"
-              inputProps={{ 'aria-label': 'search' }}
-              // value={ city }
-              onChange={ handleSearchInputChange }
-              onKeyDown={ handleKeyPress }
-            />
-            {suggestions.length > 0 && (
-              <Paper
-                elevation={3}
-                style={{ position: 'absolute', width: '100%' }}
-              >
-                <List>
-                  {suggestions.map((suggestion, index) => (
-                    <ButtonBase
-                      key={index}
-                      onClick={ () => handleSuggestionClick(suggestion) }
-                    >
-                      <ListItem>
-                        {suggestion}
-                      </ListItem>
-                    </ButtonBase>
-                    
-                  ))}
-                </List>
-              </Paper>
-            )}
-          </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { md: 'flex' } }}>
             <IconButton
