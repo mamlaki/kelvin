@@ -1,38 +1,31 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+
+import Link from 'next/link'
+import { signOut } from 'next-auth/react'
+
+import { useWeather } from '@/utils/weathercontext';
+import { getWeatherData } from '@/utils/api/weatherapi';
+import cities from '../utils/jsondata/cities'
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import Paper from '@mui/material/Paper'
-import ButtonBase from '@mui/material/ButtonBase'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-
-import { blue } from '@mui/material/colors'
-import { useSession } from 'next-auth/react';
-import Link from 'next/link'
-import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
-import { useState } from 'react';
-import { useEffect } from 'react';
 
-import { useWeather } from '@/utils/weathercontext';
-import { getWeatherData } from '@/utils/api/weatherapi';
 
-import citiestest from '../utils/jsondata/citiestest'
-import cities from '../utils/jsondata/cities'
-
+import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
 
 export default function Navbar() {
@@ -57,7 +50,6 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
-  const [suggestionClicked, setSuggestionClicked] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
@@ -121,35 +113,35 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
+
+  const fetchWeatherData = (cityName) => {
+    if (weatherData.some(data => data.name === cityName)) {
+      console.log('City already added.')
+      return
+    }
+
+    setIsProcessing(true)
+    getWeatherData(cityName)
+      .then(data => {
+        setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
+      })
+      .catch(error => console.error('Failed to fetch weather: ', error))
+      .finally(() => {
+        setIsProcessing(false)
+      })
+  }
+
   let debounceTimeout = null
 
   const handleKeyPress = (event) => {
-    event.stopPropagation()
     if (isProcessing) return
-    clearTimeout(debounceTimeout)
-    debounceTimeout = setTimeout(() => {
-      if (event.key === 'Enter' && !suggestionClicked) {
-        console.log('HANDLE KEY PRESS TRIGGER')
-        const cityName = event.target.value
+    const cityName = event.target.value
 
-        console.log('Checking weatherData: ', weatherData)
-
-        if (!weatherData.some(data => data.name === cityName)) {
-          setIsProcessing(true)
-          getWeatherData(cityName)
-          .then(data => {
-            setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
-            setSuggestionClicked(false)
-          })
-          .catch(error => console.error('Failed to fetch weather: ', error))
-          .finally(() => setIsProcessing(false))
-        } else {
-          console.log('City already added')
-        }
-      } else {
-        setSuggestionClicked(false)
-      }       
-    }, 100)
+    if (event.key === 'Enter') {
+      fetchWeatherData(cityName)
+    } else if (event.key === 'Escape') {
+      event.target.blur()
+    }
   }
 
   // Search suggestions functionality
@@ -170,32 +162,12 @@ export default function Navbar() {
 
     debounceTimeout = setTimeout(() => {
       setSearchTerm(event.target.value)
-      setSuggestionClicked(false)
+      // setSuggestionClicked(false)
     }, 100)
   }
 
   const handleSuggestionClick = (cityName) => {
-    if (isProcessing) return
-    console.log('HANDLE SUGGESTION CLICK TRIGGER')
-    setSelectedCity(cityName)
-    console.log(`Attempting to fetch weather for: ${cityName}`)
-
-    console.log('Checking weatherData: ', weatherData)
-    if (!weatherData.some(data => data.name === cityName)) {
-      setSuggestionClicked(true)
-      if (cityName) {
-        setIsProcessing(true)
-        getWeatherData(cityName)
-        .then(data => {
-          setWeatherData(prevWeatherData => Array.isArray(prevWeatherData) ? [...prevWeatherData, data] : [data])
-          setSuggestionClicked(false)
-        })
-        .catch(error => console.error('Failed to fetch weather: ', error))
-        .finally(() => setIsProcessing(false))
-      }
-    } else {
-      console.log('City already added.')
-    }
+    fetchWeatherData(cityName)
   }
 
   const menuId = 'primary-search-account-menu';
@@ -244,8 +216,8 @@ export default function Navbar() {
             </Typography>
           </Link>
           <Autocomplete 
-            id='free-solo-demo'
-            freeSolo
+            id='auto-complete'
+            autoComplete
             options={suggestions.map((option) => option)}
             renderInput={(params) => (
               <TextField {...params}
@@ -265,6 +237,7 @@ export default function Navbar() {
               />
             )}
             onChange={(event, newValue) => {
+              // setHasSelectedUsingKeyboard(false)
               setSelectedCity(newValue)
               handleSuggestionClick(newValue)
             }}
