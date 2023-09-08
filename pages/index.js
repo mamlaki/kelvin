@@ -9,31 +9,18 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
+import DeleteIcon from '@mui/icons-material/Delete'
+
+import WeatherCard from '@/components/WeatherCard'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-  const { weatherData } = useWeather()
-  const [tempUnit, setTempUnit] = useState('C')
+  const { weatherData, setWeatherData } = useWeather()
 
-  const toggleTempUnit = () => {
-    if (tempUnit === 'C') {
-      setTempUnit('F')
-    } else if (tempUnit === 'F') {
-      setTempUnit('K')
-    } else {
-      setTempUnit('C')
-    }
-  }
-
-  const convertTemp = (kelvinTemp) => {
-    if (tempUnit === 'C') {
-      return Math.round(kelvinTemp - 273.15)
-    } else if (tempUnit === 'F') {
-      return Math.round((kelvinTemp - 273.15) * 9 / 5 + 32)
-    } else {
-      return Math.round(kelvinTemp)
-    }
+  const handleDelete = (cityName) => {
+    const updatedWeatherData = weatherData.filter(data => data.name !== cityName)
+    setWeatherData(updatedWeatherData)
   }
 
   return (
@@ -46,37 +33,21 @@ export default function Home() {
       </Head>
       <header>
       </header>
-      <main>
-        {weatherData && (
-          <Grid container spacing={2} justifyContent={'center'}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography variant='h5' component='div'>
-                    { weatherData.name }
-                  </Typography>
-                  <Typography variant='subtitle1' color='textSecondary'>
-                    { weatherData.weather[0].description }
-                  </Typography>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography
-                      variant='h6'
-                      component='span'
-                      onClick={toggleTempUnit}
-                      style={{cursor: 'pointer'}}
-
-                    >
-                      {convertTemp(weatherData.main.temp)}º{tempUnit}
-                    </Typography>
-                    <IconButton size='small' onClick={toggleTempUnit}>
-                      <DeviceThermostatIcon />
-                    </IconButton>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        )}
+      <main>  
+        {weatherData && weatherData.length > 0 ? (
+            weatherData.map((data, index)=> {
+              return (
+                <WeatherCard 
+                  key={index}
+                  data={data}
+                  onDelete={() => handleDelete(data.name)}
+                />
+              )
+            })
+          ) : (
+            <Typography variant='h6'>No cities planned yet.</Typography>
+          )
+        }
       </main>
       <footer>
 

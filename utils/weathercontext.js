@@ -13,7 +13,7 @@ export const useWeather = () => {
 }
 
 export const WeatherProvider = ({ children }) => {
-  const [weatherData, setWeatherData] = useState(null)
+  const [weatherData, setWeatherData] = useState([])
 
   return (
     <WeatherContext.Provider value={{ weatherData, setWeatherData }}>

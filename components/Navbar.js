@@ -194,7 +194,7 @@ export default function Navbar() {
     console.log(`Attempting to fetch weather for: ${cityName}`)
     if (cityName) {
       getWeatherData(cityName)
-      .then(data => setWeatherData(data))
+      .then(data => setWeatherData(prevWeatherData => [...prevWeatherData, data]))
       .catch(error => console.error('Failed to fetch weather: ', error))
     }
   }
