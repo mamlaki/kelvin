@@ -31,6 +31,7 @@ import { useWeather } from '@/utils/weathercontext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 
 import citiestest from '../utils/jsondata/citiestest'
+import cities from '../utils/jsondata/cities'
 
 const navBlue = blue[500]
 
@@ -154,7 +155,7 @@ export default function Navbar() {
   // Search suggestions functionality
   useEffect(() => {
     if (searchTerm) {
-      const filteredCities = citiestest.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase()))
+      const filteredCities = Array.from(new Set(cities.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 10)))
       setSuggestions(filteredCities)
     } else {
       setSuggestions([])
