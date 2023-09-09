@@ -50,9 +50,10 @@ export default function Navbar() {
   const [suggestions, setSuggestions] = useState([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [enterKeyPressed, setEnterKeyPressed] = useState(false)
-  const [suggestionClicked, setSuggestionClicked] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [isSuggestionSelected, setIsSuggestionSelected] = useState(false)
+  const [isSelectionMade, setIsSelectionMade] = useState(false)
 
-  const debounceTimeout = useRef(null)
   const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
   useEffect(() => {
@@ -124,57 +125,74 @@ export default function Navbar() {
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget)
   const handleMenuClose = () => setAnchorEl(null)
 
-  const fetchWeatherData = (cityName) => {
-    console.log('Attempting to fetch: ', cityName)
+
+  const fetchWeatherData = async (cityName) => {
+    console.log('Fetching weather data for: ', cityName)
 
     if (weatherData.some(data => data.name === cityName)) {
       console.log('City already added.')
       return
     }
-
     setIsProcessing(true)
-    getWeatherData(cityName)
-      .then(data => {
-        setWeatherData(prevWeatherData => [...prevWeatherData, data])
-      })
-      .catch(error => console.error('Failed to fetch weather: ', error))
-      .finally(() => {
-        setIsProcessing(false)
-      })
+    try {
+      const data = await getWeatherData(cityName)
+      console.log('Received data: ', data)
+      setWeatherData(prevWeatherData => [...prevWeatherData, data])
+      setSearchTerm('')
+    } catch (error) {
+      console.error('Failed to fetch weather: ', error)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
+
+  let timeoutId
+
   const handleKeyPress = (event) => {
-    if (isProcessing) return
     if (event.key === 'Enter') {
-      setEnterKeyPressed(true)
-    } else if (event.key === 'Escape') {
-      event.target.blur()
+      event.preventDefault()
+      if (!isSuggestionSelected) {
+        timeoutId = setTimeout(() => {
+          fetchWeatherData(inputValue)
+        }, 100)
+      } else {
+        clearTimeout(timeoutId)
+      }
+
+      setIsSuggestionSelected(false)
+      setIsSelectionMade(false)
     }
   }
 
   useEffect(() => {
-    if (debouncedSearchTerm && enterKeyPressed) {
+    if (enterKeyPressed && !isProcessing) {
+      console.log('Enter key Pressed: ', debouncedSearchTerm)
       fetchWeatherData(debouncedSearchTerm)
       setEnterKeyPressed(false)
     }
-  }, [debouncedSearchTerm, enterKeyPressed])
+  }, [debouncedSearchTerm, enterKeyPressed, isProcessing])
+
 
   // Search suggestions functionality
   useEffect(() => {
-    if (searchTerm) {
-      const filteredCities = Array.from(new Set(cities.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 10)))
-      setSuggestions(filteredCities)
-    } else {
-      setSuggestions([])
-    }
-  }, [searchTerm])
+    const timer = setTimeout(() => {
+      if (searchTerm) {
+        const filteredCities = Array.from(new Set(cities.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 10)));
+        setSuggestions(filteredCities);
+      } else {
+        setSuggestions([]);
+      }
+    }, 100);
+  
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const handleSearchInputChange = (event) => {
-    clearTimeout(debounceTimeout.current)
-
-    debounceTimeout.current = setTimeout(() => {
-      setSearchTerm(event.target.value)
-    }, 100)
+    const newInputValue = event.target.value
+    console.log('handleSearchInputChange: ', newInputValue)
+    setInputValue(event.target.value)
+    setSearchTerm(event.target.value)
   }
 
   const menuId = 'primary-search-account-menu';
@@ -243,11 +261,25 @@ export default function Navbar() {
                 onKeyDown={handleKeyPress}
               />
             )}
+            onInputChange={(event, newInputValue, reason) => {
+              console.log('onInputChange - newInputValue: ', newInputValue)
+              console.log('onInputChange - reason: ', reason)
+              if (reason === 'select-option' || reason === 'reset') {
+                clearTimeout(timeoutId)
+                fetchWeatherData(newInputValue)
+                setIsSuggestionSelected(true)
+                setIsSelectionMade(true)
+              } else {
+                setIsSelectionMade(false)
+              }
+              setInputValue(newInputValue)
+              setSearchTerm(newInputValue)
+            }}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' && !suggestionClicked) {
-                event.preventDefault()
-                console.log("Enter key was pressed but default prevented")
-                setEnterKeyPressed(true)
+              if (isSuggestionSelected) {
+                console.log('Selected value being fetched: ', inputValue)
+                setIsSuggestionSelected(false)
+                fetchWeatherData(inputValue)
               }
             }}
           />
