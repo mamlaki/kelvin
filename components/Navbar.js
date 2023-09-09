@@ -7,8 +7,9 @@ import { useRef } from 'react';
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
-import { useWeather } from '@/utils/weathercontext';
+import { useWeather } from '@/utils/WeatherContext';
 import { getWeatherData } from '@/utils/api/weatherapi';
+import { useDebounce } from '@/utils/useDebounce';
 import cities from '../utils/jsondata/cities'
 
 import AppBar from '@mui/material/AppBar';
@@ -52,22 +53,6 @@ export default function Navbar() {
   const [suggestionClicked, setSuggestionClicked] = useState(false)
 
   const debounceTimeout = useRef(null)
-
-  const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value)
-  
-    useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value)
-      }, delay)
-      return () => {
-        clearTimeout(handler)
-      }
-    }, [value])
-
-    return debouncedValue
-  }
-
   const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useState } from 'react'
 import { Inter } from 'next/font/google'
-import { useWeather } from '@/utils/weathercontext'
+import { useWeather } from '@/utils/WeatherContext'
 
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
