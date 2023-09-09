@@ -81,6 +81,19 @@ export default function Navbar() {
   }
 
   useEffect(() => {
+    let timer
+    if (snackBarOpen) {
+      timer = setTimeout(() => {
+        setSnackBarOpen(false)
+        if (snackBarMessage === 'Signed out successfully') {
+          router.push('/')
+        }
+      }, 1000)
+    }
+    return () => clearTimeout(timer)
+  }, [snackBarOpen, snackBarMessage, router])
+
+  useEffect(() => {
     const handleRouteChange = (url) => {
       if (initialLoad) {
         setInitialLoad(false)
@@ -112,13 +125,7 @@ export default function Navbar() {
   const handleMenuClose = () => setAnchorEl(null)
 
   const fetchWeatherData = (cityName) => {
-    console.log('Attempting to fetch: ', cityName, 'Last action was: ', lastActionRef.current)
-    if (lastActionRef.current === cityName) {
-      console.log('Skipping duplicate fetch for: ', cityName)
-      return 
-    }
-    lastActionRef.current = cityName
-    console.log('Attempting to fetch ewather data for: ', cityName)
+    console.log('Attempting to fetch: ', cityName)
 
     if (weatherData.some(data => data.name === cityName)) {
       console.log('City already added.')
@@ -128,37 +135,29 @@ export default function Navbar() {
     setIsProcessing(true)
     getWeatherData(cityName)
       .then(data => {
-        if (!weatherData.some(existingData => existingData.name === data.name)) {
-          setWeatherData(prevWeatherData => [...prevWeatherData, data])
-        }
+        setWeatherData(prevWeatherData => [...prevWeatherData, data])
       })
       .catch(error => console.error('Failed to fetch weather: ', error))
       .finally(() => {
         setIsProcessing(false)
       })
-
-      
   }
-
-  useEffect(() => {
-    if (debouncedSearchTerm) {
-      fetchWeatherData(debouncedSearchTerm)
-    }
-  }, [debouncedSearchTerm])
-
-  const lastActionRef = useRef(null)
 
   const handleKeyPress = (event) => {
     if (isProcessing) return
-    const cityName = event.target.value
-
     if (event.key === 'Enter') {
-      fetchWeatherData(cityName)
       setEnterKeyPressed(true)
     } else if (event.key === 'Escape') {
       event.target.blur()
     }
   }
+
+  useEffect(() => {
+    if (debouncedSearchTerm && enterKeyPressed) {
+      fetchWeatherData(debouncedSearchTerm)
+      setEnterKeyPressed(false)
+    }
+  }, [debouncedSearchTerm, enterKeyPressed])
 
   // Search suggestions functionality
   useEffect(() => {
