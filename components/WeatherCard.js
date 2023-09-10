@@ -32,11 +32,15 @@ export default function WeatherCard({ data, onDelete }) {
     }
   }
 
+  const countryCodeToFlag = (countryCode) => {
+    return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))
+  }
+
   return (
     <Card style={{ maxWidth: '300px', width: '100%' }}>
       <CardContent>
         <Typography variant='h5' component='div'>
-          { data.name }
+          { data.name } { countryCodeToFlag(data.sys.country) }
         </Typography>
         <Typography variant='subtitle1' color='textSecondary'>
           { data.weather[0].description }
