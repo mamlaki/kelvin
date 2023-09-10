@@ -8,6 +8,11 @@ import Container from '@mui/material/Container'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
 
+import IconButton from '@mui/material/IconButton'
+import GitHubIcon from '@mui/icons-material/GitHub'
+import LinkedInIcon from '@mui/icons-material/LinkedIn'
+import TwitterIcon from '@mui/icons-material/Twitter'
+
 import WeatherCard from '@/components/WeatherCard'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -91,6 +96,17 @@ export default function Home() {
                   <Link href='#' color='inherit' underline='none'>
                     Contact
                   </Link>
+                </Grid>
+                <Grid item xs={12}>
+                  <IconButton color='inherit'>
+                    <GitHubIcon />
+                  </IconButton>
+                  <IconButton color='inherit'>
+                    <LinkedInIcon />
+                  </IconButton>
+                  <IconButton color='inherit'>
+                    <TwitterIcon />
+                  </IconButton>
                 </Grid>
               </Grid>
               <Box mt={3}>
