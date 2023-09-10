@@ -230,60 +230,73 @@ export default function Navbar() {
         style={{ backgroundColor: navBlue }}
         >
         <Toolbar>
-          <Link href='/'>
-            <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{ display: { xs: 'none', sm: 'block' } }}
-            >
-                Kelvin
-            </Typography>
-          </Link>
-          <Autocomplete 
-            id='auto-complete'
-            autoComplete
-            options={suggestions.map((option) => option)}
-            renderInput={(params) => (
-              <TextField {...params}
-                label='Enter City'
-                sx={{ width: 300, backgroundColor: 'white' }}
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      <SearchIcon />
-                      {params.InputProps.startAdornment}
-                    </>
-                  )
-                }}
-                onChange={handleSearchInputChange}
-                onKeyDown={handleKeyPress}
-              />
-            )}
-            onInputChange={(event, newInputValue, reason) => {
-              console.log('onInputChange - newInputValue: ', newInputValue)
-              console.log('onInputChange - reason: ', reason)
-              if (reason === 'select-option' || reason === 'reset') {
-                clearTimeout(timeoutId)
-                fetchWeatherData(newInputValue)
-                setIsSuggestionSelected(true)
-                setIsSelectionMade(true)
-              } else {
-                setIsSelectionMade(false)
-              }
-              setInputValue(newInputValue)
-              setSearchTerm(newInputValue)
-            }}
-            onKeyDown={(event) => {
-              if (isSuggestionSelected) {
-                console.log('Selected value being fetched: ', inputValue)
-                setIsSuggestionSelected(false)
-                fetchWeatherData(inputValue)
-              }
-            }}
-          />
-          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{
+            flexGrow: 1,
+            display: 'flex',
+            justifyContent: { xs: 'flex-start', md: 'center' }
+          }}>
+            {/* <Link href='/'>
+              <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
+              >
+                  Kelvin
+              </Typography>
+            </Link> */}
+            <Autocomplete 
+              id='auto-complete'
+              autoComplete
+              options={suggestions.map((option) => option)}
+              renderInput={(params) => (
+                <TextField {...params}
+                  placeholder='Enter City'
+                  sx={{
+                    width: { xs: 300, md: 400 },
+                    backgroundColor: 'white',
+                    borderRadius: '24px',
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '24px',
+                      bordercolor: 'rgba(0, 0, 0, 0.23'
+                    }
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <SearchIcon />
+                        {params.InputProps.startAdornment}
+                      </>
+                    )
+                  }}
+                  onChange={handleSearchInputChange}
+                  onKeyDown={handleKeyPress}
+                />
+              )}
+              onInputChange={(event, newInputValue, reason) => {
+                console.log('onInputChange - newInputValue: ', newInputValue)
+                console.log('onInputChange - reason: ', reason)
+                if (reason === 'select-option' || reason === 'reset') {
+                  clearTimeout(timeoutId)
+                  fetchWeatherData(newInputValue)
+                  setIsSuggestionSelected(true)
+                  setIsSelectionMade(true)
+                } else {
+                  setIsSelectionMade(false)
+                }
+                setInputValue(newInputValue)
+                setSearchTerm(newInputValue)
+              }}
+              onKeyDown={(event) => {
+                if (isSuggestionSelected) {
+                  console.log('Selected value being fetched: ', inputValue)
+                  setIsSuggestionSelected(false)
+                  fetchWeatherData(inputValue)
+                }
+              }}
+            />
+          </Box>
           <Box sx={{ display: { md: 'flex' } }}>
             <IconButton
               size="large"
