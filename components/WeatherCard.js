@@ -33,35 +33,31 @@ export default function WeatherCard({ data, onDelete }) {
   }
 
   return (
-    <Grid container spacing={2} justifyContent={'center'}>
-      <Grid item xs={12} sm={6} md={4}>
-        <Card>
-          <CardContent>
-            <Typography variant='h5' component='div'>
-              { data.name }
-            </Typography>
-            <Typography variant='subtitle1' color='textSecondary'>
-              { data.weather[0].description }
-            </Typography>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Typography 
-                variant='h6'
-                component='span'
-                onClick={ toggleTempUnit }
-                style={{ cursor: 'pointer' }}
-              >
-                {convertTemp(data.main.temp)}º{tempUnit}
-              </Typography>
-              <IconButton size='small' onClick={toggleTempUnit}>
-                <DeviceThermostatIcon />
-              </IconButton>
-            </div>
-          </CardContent>
-          <CardActions>
-            <Button size='small' onClick={onDelete}>Delete</Button>
-          </CardActions>
-        </Card>
-      </Grid>
-    </Grid>
+    <Card style={{ maxWidth: '300px', width: '100%' }}>
+      <CardContent>
+        <Typography variant='h5' component='div'>
+          { data.name }
+        </Typography>
+        <Typography variant='subtitle1' color='textSecondary'>
+          { data.weather[0].description }
+        </Typography>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Typography 
+            variant='h6'
+            component='span'
+            onClick={ toggleTempUnit }
+            style={{ cursor: 'pointer' }}
+          >
+            {convertTemp(data.main.temp)}º{tempUnit}
+          </Typography>
+          <IconButton size='small' onClick={toggleTempUnit}>
+            <DeviceThermostatIcon />
+          </IconButton>
+        </div>
+      </CardContent>
+      <CardActions>
+        <Button size='small' onClick={onDelete}>Delete</Button>
+      </CardActions>
+    </Card>
   )
 }

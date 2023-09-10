@@ -2,7 +2,6 @@ import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import { useWeather } from '@/utils/WeatherContext'
 
-
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
@@ -31,36 +30,40 @@ export default function Home() {
       <header>
       </header>
       <main>  
-        {weatherData && weatherData.length > 0 ? (
-            weatherData.map((data, index)=> {
-              return (
-                <WeatherCard 
-                  key={index}
-                  data={data}
-                  onDelete={() => handleDelete(data.name, index)}
-                />
+        <Container maxWidth='md'>
+          <Grid container spacing={3} sx={{ marginTop: '1rem' }}>
+            {weatherData && weatherData.length > 0 ? (
+              weatherData.map((data, index)=> {
+                return (
+                  <Grid item xs={12} sm={6} md={6} lg={6} key={index}>
+                    <WeatherCard 
+                      data={data}
+                      onDelete={() => handleDelete(data.name, index)}
+                    />
+                  </Grid>
+                )
+              })
+            ) : (
+                <Grid
+                  container
+                  spacing={0}
+                  direction='column'
+                  alignItems='center'
+                  justifyContent='center'
+                  style={{ minHeight: '100vh' }}
+                >
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>No cities added yet</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='h6'>😔</Typography>
+                  </Grid>
+                </Grid>
               )
-            })
-          ) : (
-            <Container style={{ minHeight: '100vh', backgroundColor: '#F5F5F5' }}>
-              <Grid
-                container
-                spacing={0}
-                direction='column'
-                alignItems='center'
-                justifyContent='center'
-                style={{ minHeight: '100vh' }}
-              >
-                <Grid item xs={12}>
-                  <Typography variant='h6'>No cities added yet</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant='h6'>😔</Typography>
-                </Grid>
-              </Grid>
-            </Container>
-          )
-        }
+            }
+          </Grid>
+        </Container>
+        
       </main>
       <footer>
 
