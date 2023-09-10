@@ -30,45 +30,41 @@ export default function Home() {
       </Head>
       <header>
       </header>
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Container component='main' sx={{ flex: '1 0 auto' }}>
-          <main>  
-            <Container maxWidth='md'>
-              <Grid container spacing={3} sx={{ marginTop: '1rem' }}>
-                {weatherData && weatherData.length > 0 ? (
-                  weatherData.map((data, index)=> {
-                    return (
-                      <Grid item xs={12} sm={6} md={6} lg={6} key={index}>
-                        <WeatherCard 
-                          data={data}
-                          onDelete={() => handleDelete(data.name, index)}
-                        />
-                      </Grid>
-                    )
-                  })
-                ) : (
-                    <Grid
-                      container
-                      spacing={0}
-                      direction='column'
-                      alignItems='center'
-                      justifyContent='center'
-                      // style={{ minHeight: '100vh' }}
-                    >
-                      <Grid item xs={12}>
-                        <Typography variant='h6'>No cities added yet</Typography>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography variant='h6'>😔</Typography>
-                      </Grid>
+        <main>  
+          <Container maxWidth='md'>
+            <Grid container spacing={3} sx={{ marginTop: '1rem' }}>
+              {weatherData && weatherData.length > 0 ? (
+                weatherData.map((data, index)=> {
+                  return (
+                    <Grid item xs={12} sm={6} md={6} lg={6} key={index}>
+                      <WeatherCard 
+                        data={data}
+                        onDelete={() => handleDelete(data.name, index)}
+                      />
                     </Grid>
                   )
-                }
-              </Grid>
-            </Container>
-          </main>
-        </Container>
-      </Box>
+                })
+              ) : (
+                  <Grid
+                    container
+                    spacing={0}
+                    direction='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    // style={{ minHeight: '100vh' }}
+                  >
+                    <Grid item xs={12}>
+                      <Typography variant='h6'>No cities added yet</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant='h6'>😔</Typography>
+                    </Grid>
+                  </Grid>
+                )
+              }
+            </Grid>
+          </Container>
+        </main>
     </>
   )
 }

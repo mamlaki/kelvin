@@ -7,6 +7,9 @@ import '@fontsource/roboto/700.css';
 // Other
 import { SessionProvider } from "next-auth/react"
 import { WeatherProvider } from '@/utils/WeatherContext';
+
+import Box from '@mui/material/Box'
+
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -15,8 +18,16 @@ export default function App({ Component, pageProps }) {
       <SessionProvider session={pageProps.session}>
         <WeatherProvider>
           <Navbar />
-          <Component {...pageProps}/>
-          <Footer />
+          <Box
+            display='flex'
+            flexDirection='column'
+            minHeight='100vh'
+          >
+            <Box flexGrow={1}>
+              <Component {...pageProps}/>
+            </Box>
+            <Footer />
+          </Box>
         </WeatherProvider>
       </SessionProvider>
     )
