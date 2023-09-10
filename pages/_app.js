@@ -8,6 +8,7 @@ import '@fontsource/roboto/700.css';
 import { SessionProvider } from "next-auth/react"
 import { WeatherProvider } from '@/utils/WeatherContext';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 export default function App({ Component, pageProps }) {
     return (
@@ -15,6 +16,7 @@ export default function App({ Component, pageProps }) {
         <WeatherProvider>
           <Navbar />
           <Component {...pageProps}/>
+          <Footer />
         </WeatherProvider>
       </SessionProvider>
     )
