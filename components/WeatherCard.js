@@ -60,7 +60,7 @@ export default function WeatherCard({ data, onDelete }) {
         </div>
       </CardContent>
       <CardActions>
-        <Button size='small' onClick={onDelete}>Delete</Button>
+        <Button size='small' onClick={onDelete} color='error'>Unpin</Button>
       </CardActions>
     </Card>
   )
