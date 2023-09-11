@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
 
@@ -9,7 +10,6 @@ import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-
 
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
@@ -91,6 +91,13 @@ export default function WeatherCard({ data, onDelete }) {
       </CardContent>
       <CardActions>
         <Button size='small' onClick={onDelete} color='error'>Unpin</Button>
+        <Link href={`/cities/${data.name}`}>
+          
+            <Button size='small' color='primary'>
+              Details
+            </Button>
+          
+        </Link>
       </CardActions>
     </Card>
   )
