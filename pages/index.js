@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-import { useWeather } from '@/utils/WeatherContext'
+import { useWeather } from '@/utils/contexts/WeatherContext'
 
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'

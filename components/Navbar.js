@@ -7,7 +7,7 @@ import { useRef } from 'react';
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
-import { useWeather } from '@/utils/WeatherContext';
+import { useWeather } from '@/utils/contexts/WeatherContext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 import { useDebounce } from '@/utils/useDebounce';
 import cities from '../utils/jsondata/cities'

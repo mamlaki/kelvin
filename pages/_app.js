@@ -6,7 +6,7 @@ import '@fontsource/roboto/700.css';
 
 // Other
 import { SessionProvider } from "next-auth/react"
-import { WeatherProvider } from '@/utils/WeatherContext';
+import { WeatherProvider } from '@/utils/contexts/WeatherContext';
 
 import Box from '@mui/material/Box'
 
