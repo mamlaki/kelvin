@@ -19,12 +19,22 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Button from '@mui/material/Button'
+import Select from '@mui/material/Select'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
@@ -45,6 +55,9 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
+  // Settings stateful variables
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
   // Weather and city search stateful variables
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState([])
@@ -53,6 +66,7 @@ export default function Navbar() {
   const [inputValue, setInputValue] = useState('')
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false)
   const [isSelectionMade, setIsSelectionMade] = useState(false)
+  const [defaultTempUnit, setDefaultTempUnit] = useState('Celsius')
 
   const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
@@ -223,6 +237,10 @@ export default function Navbar() {
     </Menu>
   );
 
+  const handleSettingsToggle = () => {
+    setSettingsOpen(!settingsOpen)
+  }
+
   return (
     <Box sx={{ flexGrow: 1, margin: -1 }}>
       <AppBar 
@@ -235,16 +253,6 @@ export default function Navbar() {
             display: 'flex',
             justifyContent: { xs: 'flex-start', md: 'center' }
           }}>
-            {/* <Link href='/'>
-              <Typography
-                  variant="h6"
-                  noWrap
-                  component="div"
-                  sx={{ display: { xs: 'none', sm: 'block' } }}
-              >
-                  Kelvin
-              </Typography>
-            </Link> */}
             <Autocomplete 
               id='auto-complete'
               autoComplete
@@ -309,9 +317,53 @@ export default function Navbar() {
             >
               <AccountCircle />
             </IconButton>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="settings menu"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              color="inherit"
+              onClick={handleSettingsToggle}
+            >
+              <SettingsIcon />
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
+      <Dialog
+        open={settingsOpen}
+        onClose={handleSettingsToggle}
+        aria-labelledby='settings-dialog-title'
+        maxWidth='lg'
+        fullWidth={true}
+        PaperProps={{
+          sx: { width: '80%'}
+        }}
+      >
+        <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
+        <DialogContent sx={{ minHeight: 400 }}>
+          <FormControl fullWidth variant='outlined' sx={{ mt: 2 }}>
+            <InputLabel id='default-temp-unit-label'>Default Temperature Unit</InputLabel>
+            <Select
+              labelId='default-temp-unit-label'
+              id='default-temp-unit'
+              value={defaultTempUnit}
+              onChange={(event) => setDefaultTempUnit(event.target.value)}
+              label='Default Temperature Unit'
+            >
+              <MenuItem value={'Celsius'}>Celsius</MenuItem>
+              <MenuItem value={'Fahrenheit'}>Fahrenheit</MenuItem>
+              <MenuItem value={'Kelvin'}>Kelvin</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSettingsToggle} color='primary'>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       {renderMenu}
       <Snackbar 
         open={snackBarOpen} 
