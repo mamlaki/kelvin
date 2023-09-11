@@ -10,6 +10,17 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 
+import WbSunnyIcon from '@mui/icons-material/WbSunny'
+import CloudIcon from '@mui/icons-material/Cloud'
+import FlashOnIcon from '@mui/icons-material/FlashOn'
+import AcUnitIcon from '@mui/icons-material/AcUnit'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+
+import { blue } from '@mui/material/colors'
+const navBlue = blue[500]
+
 export default function WeatherDetail() {
   const router = useRouter()
   const { name } = router.query
@@ -25,6 +36,50 @@ export default function WeatherDetail() {
     } else {
       return Math.round(kelvinTemp)
     }
+  }
+
+  const getWeathericon = (weatherId) => {
+    if (weatherId >= 200 && weatherId <= 232) {
+      return <FlashOnIcon style={{ color: 'yellow', fontSize: '3rem' }}/>
+    } else if (weatherId >= 300 && weatherId <= 321) {
+      return <AcUnitIcon style={{ color: 'blue', fontSize: '3rem' }} />
+    } else if (weatherId >= 500 && weatherId <= 531) {
+      return <CloudIcon style={{ color: 'gray', fontSize: '3rem' }} />
+    } else if (weatherId >= 800 && weatherId <= 801) {
+      return <WbSunnyIcon style={{ color: 'orange', fontSize: '3rem' }} />
+    } else {
+      return <CloudIcon style={{ color: 'gray', fontSize: '3rem' }} />
+    }
+  }
+
+  const toTitleCase = (str) => {
+    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  }
+
+  const countryCodeToFlag = (countryCode) => {
+    return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))
+  }
+
+  const unixToTime = (unixTimeStamp) => {
+    const dateObject = new Date(unixTimeStamp * 1000)
+    return dateObject.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  }
+
+  const getBackgroundByTemp = (temperature, unit = 'C') => {
+    let temp = temperature
+
+    if (unit === 'F') {
+      temp = (temp - 32) * 5 / 9
+    }
+
+    if (temp >= 25) {
+      return 'linear-gradient(45deg, #FF4500, #FF8C00)'
+    } else if (temp >= 15) {
+      return 'linear-gradient(45deg, #3CB371, #20B2AA)'
+    } else {
+      return 'linear-gradient(45deg, #1E90FF, #00008B)'
+    }
+
   }
 
   useEffect(() => {
@@ -50,23 +105,23 @@ export default function WeatherDetail() {
 
   return (
     <Container>
-      <Typography variant='h2' component='h1' sx={{
+      <Typography variant='h4' component='h1' sx={{
         textAlign: 'center',
         mt: 5
       }}>
-        { weatherData.name }
+        { weatherData.name } { countryCodeToFlag(weatherData.sys.country) }
       </Typography>
-      <Box sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        mt: 4
-      }}>
-        <Card sx={{ m: 2, minWidth: 200 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <Card sx={{
+          m: 2,
+          maxWidth: 150,
+          borderRadius: '3rem',
+          p: 2, 
+          background: getBackgroundByTemp(convertTemp(weatherData.main.temp, defaultTempUnit), defaultTempUnit)
+        }}>
           <CardContent>
-            <Typography variant='h6'>Current Temperature:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center '}}>
-              <Typography variant='h4'>
+            <Box sx={{ display: 'flex', alignItems: 'center ', justifyContent: 'center'}}>
+              <Typography variant='h4' color='white'>
                 { 
                   convertTemp(weatherData.main.temp, defaultTempUnit) 
                 }
@@ -78,6 +133,41 @@ export default function WeatherDetail() {
             </Box>  
           </CardContent>
         </Card>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.6rem', mt: '-2rem' }}>
+          <Typography variant='h2' sx={{
+            textAlign: 'center',
+            mt: 2
+          }}>
+            { getWeathericon(weatherData.weather[0].id) }
+          </Typography>
+          <Typography variant='h5' sx={{
+            textAlign: 'center',
+            mt: 2
+          }}>
+            { toTitleCase(weatherData.weather[0].description) }        
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', mt: '-1rem'}}>
+          <Typography variant='h5' sx={{
+            textAlign: 'center',
+            mt: 2
+          }}>
+            H: { convertTemp(weatherData.main.temp_max, defaultTempUnit) }º
+          </Typography>
+          <Typography variant='h5' sx={{
+            textAlign: 'center',
+            mt: 2
+          }}>
+            L: { convertTemp(weatherData.main.temp_min, defaultTempUnit) }º
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        mt: 4
+      }}>
         <Card sx={{ m: 2, minWidth: 200 }}> 
           <CardContent>
             <Typography variant='h6'>Feels Like:</Typography>
@@ -107,6 +197,39 @@ export default function WeatherDetail() {
             <Typography variant='h6'>Wind Speed:</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h4'>{ weatherData.wind.speed } m/s</Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        mt: 4
+      }}>
+        <Card sx={{
+           m: 2, 
+           minWidth: 200, 
+           background: 'linear-gradient(90deg, #FF7E5F, #FEB47B)', 
+           color: 'white'
+          }}>
+          <CardContent>
+            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', gap: '0.3rem'}}>Sunrise <WbSunnyIcon />:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h4'>{ unixToTime(weatherData.sys.sunrise) }<ArrowDropUpIcon /></Typography>
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{
+           m: 2, 
+           minWidth: 200, 
+           background: 'linear-gradient(90deg, #5A7D9A, #243447)', 
+           color: 'white'
+          }}>
+          <CardContent>
+            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>Sunset <DarkModeIcon />:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h4'>{ unixToTime(weatherData.sys.sunset) }<ArrowDropDownIcon /></Typography>
             </Box>
           </CardContent>
         </Card>
