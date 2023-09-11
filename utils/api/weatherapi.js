@@ -1,4 +1,5 @@
 import { BASE_URL } from "./base";
+import { MAP_URL } from "./base";
 
 const API_KEY = '7cc6e0a83f9a403f080358c184ad3562'
 
@@ -14,4 +15,8 @@ export const getWeatherData = (cityName) => {
       console.error('Error fetching weather data: ', error)
       throw error
     })
+}
+
+export const getMapUrl = (lat, lon, zoom) => {
+  return `${MAP_URL}/temp_new/${zoom}/${lat}/${lon}.png?appid=${API_KEY}`
 }
