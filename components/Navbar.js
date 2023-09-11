@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
 import { useWeather } from '@/utils/contexts/WeatherContext';
+import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 import { useDebounce } from '@/utils/useDebounce';
 import cities from '../utils/jsondata/cities'
@@ -66,7 +67,7 @@ export default function Navbar() {
   const [inputValue, setInputValue] = useState('')
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false)
   const [isSelectionMade, setIsSelectionMade] = useState(false)
-  const [defaultTempUnit, setDefaultTempUnit] = useState('Celsius')
+  const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
 
   const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
@@ -352,9 +353,9 @@ export default function Navbar() {
               onChange={(event) => setDefaultTempUnit(event.target.value)}
               label='Default Temperature Unit'
             >
-              <MenuItem value={'Celsius'}>Celsius</MenuItem>
-              <MenuItem value={'Fahrenheit'}>Fahrenheit</MenuItem>
-              <MenuItem value={'Kelvin'}>Kelvin</MenuItem>
+              <MenuItem value={'C'}>Celsius</MenuItem>
+              <MenuItem value={'F'}>Fahrenheit</MenuItem>
+              <MenuItem value={'K'}>Kelvin</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>

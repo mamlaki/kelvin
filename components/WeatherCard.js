@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+import { useTempUnit } from '@/utils/contexts/TempUnitContext'
 
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
@@ -16,22 +18,27 @@ import FlashOnIcon from '@mui/icons-material/FlashOn'
 import AcUnitIcon from '@mui/icons-material/AcUnit'
 
 export default function WeatherCard({ data, onDelete }) {
-  const [tempUnit, setTempUnit] = useState('C')
+  const { defaultTempUnit: globalTempUnit } = useTempUnit()
+  const [localTempUnit, setLocalTempUnit] = useState(globalTempUnit)
+
+  useEffect(() => {
+    setLocalTempUnit(globalTempUnit)
+  }, [globalTempUnit])
 
   const toggleTempUnit = () => {
-    if (tempUnit === 'C') {
-      setTempUnit('F')
-    } else if (tempUnit === 'F') {
-      setTempUnit('K')
+    if (localTempUnit === 'C') {
+      setLocalTempUnit('F')
+    } else if (localTempUnit === 'F') {
+      setLocalTempUnit('K')
     } else {
-      setTempUnit('C')
+      setLocalTempUnit('C')
     }
   }
 
   const convertTemp = (kelvinTemp) => {
-    if (tempUnit === 'C') {
+    if (localTempUnit === 'C') {
       return Math.round(kelvinTemp - 273.15)
-    } else if (tempUnit === 'F') {
+    } else if (localTempUnit === 'F') {
       return Math.round((kelvinTemp - 273.15) * 9 / 5 + 32)
     } else {
       return Math.round(kelvinTemp)
@@ -75,7 +82,7 @@ export default function WeatherCard({ data, onDelete }) {
             onClick={ toggleTempUnit }
             style={{ cursor: 'pointer' }}
           >
-            {convertTemp(data.main.temp)}º{tempUnit}
+            {convertTemp(data.main.temp)}º{localTempUnit}
           </Typography>
           <IconButton size='small' onClick={toggleTempUnit}>
             <DeviceThermostatIcon />
