@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { getMapUrl } from '@/utils/api/weatherapi'
 import 'leaflet/dist/leaflet.css'
 
 
@@ -42,9 +43,10 @@ const DynamicPopup = dynamic(
 export default function TemperatureMap({ weatherData }) {
   const { lat, lon } = weatherData
   const [surroundingCities, setSurroundingCities] = useState([])
+  const [mapUrl, setMapUrl] = useState('')
 
   useEffect(() => {
-    fetch(`http://api.geonames.org/findNearbyPlaceNameJSON?lat=${lat}&lng=${lon}&radius=50&maxRows=10&username=mamlaki`)
+    fetch(`http://localhost:3000/api/getSurroundingCities?lat=${lat}&lng=${lon}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok')
@@ -59,7 +61,11 @@ export default function TemperatureMap({ weatherData }) {
       })
   }, [lat, lon])
 
-  const mapUrl = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=7cc6e0a83f9a403f080358c184ad3562";
+  useEffect(() => {
+    getMapUrl().then(url => setMapUrl(url)).catch(err => console.error('Error fetching map URL:', err))
+  }, [])
+
+  if (!mapUrl) return null
 
   return (
     <DynamicMapContainer
@@ -68,7 +74,7 @@ export default function TemperatureMap({ weatherData }) {
       style={{ height: '400px', width: '400px' }}
     >
       <DynamicTileLayer url={mapUrl} />
-      {surroundingCities.map((city, index) =>  {
+      {surroundingCities && surroundingCities.map((city, index) =>  {
         return (
           <DynamicMarker key={index} position={[city.lat, city.lng]}>
             <DynamicPopup>{ city.name }</DynamicPopup>
