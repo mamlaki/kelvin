@@ -42,24 +42,7 @@ const DynamicPopup = dynamic(
 
 export default function TemperatureMap({ weatherData }) {
   const { lat, lon } = weatherData
-  const [surroundingCities, setSurroundingCities] = useState([])
   const [mapUrl, setMapUrl] = useState('')
-
-  useEffect(() => {
-    fetch(`http://localhost:3000/api/getSurroundingCities?lat=${lat}&lng=${lon}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        return response.json()
-      })
-      .then(data => {
-        setSurroundingCities(data.geonames)
-      })
-      .catch(error => {
-        console.error('Failed to fetch surrounding cities: ', error)
-      })
-  }, [lat, lon])
 
   useEffect(() => {
     getMapUrl().then(url => setMapUrl(url)).catch(err => console.error('Error fetching map URL:', err))
@@ -73,14 +56,8 @@ export default function TemperatureMap({ weatherData }) {
       zoom={4}
       style={{ height: '400px', width: '400px' }}
     >
+      <DynamicTileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
       <DynamicTileLayer url={mapUrl} />
-      {surroundingCities && surroundingCities.map((city, index) =>  {
-        return (
-          <DynamicMarker key={index} position={[city.lat, city.lng]}>
-            <DynamicPopup>{ city.name }</DynamicPopup>
-          </DynamicMarker>
-        )
-      })}
     </DynamicMapContainer>
   )
 }
