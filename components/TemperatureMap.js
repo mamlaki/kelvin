@@ -53,7 +53,7 @@ export default function TemperatureMap({ weatherData }) {
   return (
     <DynamicMapContainer
       center={[lat, lon]}
-      zoom={4}
+      zoom={10}
       style={{ height: '400px', width: '400px' }}
     >
       <DynamicTileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
