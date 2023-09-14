@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getWeatherData } from '@/utils/api/weatherapi'
-
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
+import TemperatureMap from '@/components/TemperatureMap'
 
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
@@ -20,6 +20,22 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
+
+// const TemperatureMap = ({weatherData}) => {
+//   const mapUrl = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=7cc6e0a83f9a403f080358c184ad3562"
+
+//   return (
+//     <DynamicMapContainer 
+//     center={[51.505, -0.09]} 
+//     zoom={13} 
+//     style={{ height: '400px', width: '400px' }}
+//     whenCreated={mapInstance => console.log('Map created:', mapInstance)}
+//   >
+//     <DynamicTileLayer url={mapUrl} /> 
+//   </DynamicMapContainer>
+  
+//   )
+// }
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -233,6 +249,14 @@ export default function WeatherDetail() {
             </Box>
           </CardContent>
         </Card>
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        m: 4
+      }}>
+        <TemperatureMap weatherData={weatherData.coord} />
       </Box>
     </Container>
   )
