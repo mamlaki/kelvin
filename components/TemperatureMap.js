@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import TemperatureLegend from './TemperatureLegend'
 import { getMapUrl } from '@/utils/api/weatherapi'
 import 'leaflet/dist/leaflet.css'
+import { useMap } from 'react-leaflet'
 
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -44,6 +45,16 @@ const DynamicPopup = dynamic(
   { ssr: false }
 )
 
+const MapUpdater = ({ lat, lon }) => {
+  const map = useMap()
+
+  useEffect(() => {
+    map.setView([lat, lon], 10)
+  }, [lat, lon, map])
+
+  return null
+}
+
 export default function TemperatureMap({ weatherData }) {
   const { lat, lon } = weatherData
   const [mapUrl, setMapUrl] = useState('')
@@ -82,6 +93,7 @@ export default function TemperatureMap({ weatherData }) {
         >
           <DynamicTileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
           <DynamicTileLayer url={mapUrl} />
+          <MapUpdater lat={lat} lon={lon} />
         </DynamicMapContainer>
       </Box>
     </Box>
