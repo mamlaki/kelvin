@@ -15,7 +15,9 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 
-export default function Forecast({ cityName }) {
+import { convertTemp } from '@/utils/tempConverter'
+
+export default function Forecast({ cityName, tempUnit }) {
   const [forecastData, setForecastData] = useState([])
   const [isHovered, setIsHovered] = useState(false)
 
@@ -95,7 +97,7 @@ export default function Forecast({ cityName }) {
             <Box key={index} sx={{ mx: 2, textAlign: 'center' }}>
               <Typography variant='body1' fontWeight='bold' marginBottom={2}>{ formatTime(new Date(day.dt * 1000)) }</Typography>
               <Typography variant='body1' marginBottom={2}>{ isDayTime(new Date(day.dt * 1000)) ? <WbSunnyIcon /> : <DarkModeIcon /> }</Typography>
-              <Typography variant='body1'>{ Math.round(day.main.temp) }º</Typography>
+              <Typography variant='body1'>{ convertTemp(day.main.temp, tempUnit) }º</Typography>
             </Box>
           ))}
           </Box>

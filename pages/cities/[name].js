@@ -214,7 +214,7 @@ export default function WeatherDetail() {
         justifyContent: 'center',
         m: 4
       }}>
-        <Forecast cityName={weatherData.name} />
+        <Forecast cityName={weatherData.name} tempUnit={defaultTempUnit} />
       </Box>
       <Box sx={{
         display: 'flex',
