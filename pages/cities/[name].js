@@ -21,21 +21,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
 
-// const TemperatureMap = ({weatherData}) => {
-//   const mapUrl = "https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=7cc6e0a83f9a403f080358c184ad3562"
-
-//   return (
-//     <DynamicMapContainer 
-//     center={[51.505, -0.09]} 
-//     zoom={13} 
-//     style={{ height: '400px', width: '400px' }}
-//     whenCreated={mapInstance => console.log('Map created:', mapInstance)}
-//   >
-//     <DynamicTileLayer url={mapUrl} /> 
-//   </DynamicMapContainer>
-  
-//   )
-// }
+import { keyframes } from '@emotion/react'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -79,6 +65,44 @@ export default function WeatherDetail() {
   const unixToTime = (unixTimeStamp) => {
     const dateObject = new Date(unixTimeStamp * 1000)
     return dateObject.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  }
+
+  const bubbleAnimation1 = keyframes`
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-30px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  `
+
+  const bubbleAnimation2 = keyframes`
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(20px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  `
+
+  const generateBubble = (top, left, width, height, animation, duration) => {
+    return {
+      content: '""',
+      position: 'absolute',
+      top,
+      left,
+      width,
+      height,
+      borderRadius: '50%',
+      background: `radial-gradient(circle at center, rgba(255, 255, 255, ${0.2 + Math.random() * 0.3}) 0%, transparent 70%)`,
+      animation: `${animation} ${duration} infinite alternate`
+    }
   }
 
   const getBackgroundByTemp = (temperature, unit = 'C') => {
@@ -129,11 +153,25 @@ export default function WeatherDetail() {
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
         <Card sx={{
+          position: 'relative',
+          overflow: 'hidden',
           m: 2,
           maxWidth: 150,
           borderRadius: '3rem',
-          p: 2, 
-          background: getBackgroundByTemp(convertTemp(weatherData.main.temp, defaultTempUnit), defaultTempUnit)
+          p: 2,
+          background: getBackgroundByTemp(convertTemp(weatherData.main.temp, defaultTempUnit), defaultTempUnit),
+          '::before': generateBubble('10%', '-10%', '50%', '50%', bubbleAnimation1, '10s'),
+          '::after': generateBubble('40%', '60%', '40%', '40%', bubbleAnimation2, '15s'),
+          ...Array(5).fill().map((_, index) => ({
+            [`::nth-child(${index})`]: generateBubble(
+              `${Math.random() * 100}%`,
+              `${Math.random() * 100}%`,
+              `${20 + Math.random() * 30}%`,
+              `${20 + Math.random() * 30}%`,
+              Math.random() > 0.5 ? bubbleAnimation1 : bubbleAnimation2,
+              `${10 + Math.random() * 10}s`
+            )
+          }))
         }}>
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center ', justifyContent: 'center'}}>
