@@ -23,6 +23,7 @@ const navBlue = blue[500]
 
 import { keyframes } from '@emotion/react'
 import Forecast from '@/components/Forecast'
+import { convertTemp } from '@/utils/tempConverter'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -30,16 +31,6 @@ export default function WeatherDetail() {
   
   const { defaultTempUnit } = useTempUnit()
   const [weatherData, setWeatherData] = useState(null)
-
-  const convertTemp = (kelvinTemp, unit) => {
-    if (unit === 'C') {
-      return Math.round(kelvinTemp - 273.15)
-    } else if (unit === 'F') {
-      return Math.round((kelvinTemp - 273.15) * 9 / 5 + 32)
-    } else {
-      return Math.round(kelvinTemp)
-    }
-  }
 
   const getWeathericon = (weatherId) => {
     if (weatherId >= 200 && weatherId <= 232) {
