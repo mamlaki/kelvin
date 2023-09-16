@@ -2,40 +2,117 @@ import { useState, useEffect } from 'react'
 
 import { getForecastData } from '@/utils/api/weatherapi'
 
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
+
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
+import WbSunnyIcon from '@mui/icons-material/WbSunny'
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+
 export default function Forecast({ cityName }) {
   const [forecastData, setForecastData] = useState([])
+  const [isHovered, setIsHovered] = useState(false)
+
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   useEffect(() => {
     if (cityName) {
       getForecastData(cityName)
-        .then(data => setForecastData(data.list.slice(0, 3)))
+        .then(data => setForecastData(data.list))
         .catch(error => console.error('Error fetching forecast data: ', error))
     }
   }, [cityName])
 
+  const formatTime = (date) => {
+    const hours = date.getHours()
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    let formattedHours = hours % 12
+    formattedHours = formattedHours ? formattedHours : 12
+    return `${formattedHours}${ampm}`
+  }
+
+  const isDayTime = (date) => {
+    const hours = date.getHours()
+    return hours > 6 && hours < 18
+  }
+
   return (
     <Box
       sx={{
+        position: 'relative',
         display: 'flex',
-        flexWrap: 'wrap',
         justifyContent: 'center',
-        mt: 4
+        mt: 4,
+        overflowX: 'hidden',
+        maxWidth: isMobile ? '60%' : 700,
+        padding: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {forecastData.map((day, index) => (
-        <Card key={index} sx={{ m: 2, minWidth: 150 }}>
-          <CardContent>
-            <Typography variant='h6'>{ new Date(day.dt * 1000).toDateString() }</Typography>
-            {console.log(day)}
-            <Typography variant='body1'>{ `Temp: ${day.main.temp}º` }</Typography>
-          </CardContent>
-        </Card>
-      ))}      
+      {isHovered && (
+        <ArrowBackIosIcon 
+          sx={{
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            opacity: 0.2,
+            zIndex: 2
+          }}
+        />
+      )}
+      <Card>
+        <CardContent
+          sx={{
+            overflowX: 'auto',
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            '-ms-overflow-style': 'none',
+            'scrollbar-width': 'none'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {forecastData.map((day, index) => (
+            <Box key={index} sx={{ mx: 2, textAlign: 'center' }}>
+              <Typography variant='body1' fontWeight='bold' marginBottom={2}>{ formatTime(new Date(day.dt * 1000)) }</Typography>
+              <Typography variant='body1' marginBottom={2}>{ isDayTime(new Date(day.dt * 1000)) ? <WbSunnyIcon /> : <DarkModeIcon /> }</Typography>
+              <Typography variant='body1'>{ Math.round(day.main.temp) }º</Typography>
+            </Box>
+          ))}
+          </Box>
+        </CardContent>
+      </Card>
+      {isHovered && (
+        <ArrowForwardIosIcon 
+          sx={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            opacity: 0.2,
+            zIndex: 2,
+          }}
+        />
+      )}
     </Box>
   )
 }

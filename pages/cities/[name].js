@@ -221,6 +221,14 @@ export default function WeatherDetail() {
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'center',
+        m: 4
+      }}>
+        <Forecast cityName={weatherData.name} />
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
         mt: 4
       }}>
         <Card sx={{ m: 2, minWidth: 200 }}> 
@@ -288,14 +296,6 @@ export default function WeatherDetail() {
             </Box>
           </CardContent>
         </Card>
-      </Box>
-      <Box sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        m: 4
-      }}>
-        <Forecast cityName={weatherData.name} />
       </Box>
       <Box sx={{
         display: 'flex',
