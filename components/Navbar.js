@@ -142,13 +142,24 @@ export default function Navbar() {
 
 
   const fetchWeatherData = async (cityName) => {
+    if (!cityName) {
+      console.log('Empty city name provided. Exiting fetchWeatherData')
+      return
+    }
+
     console.log('Fetching weather data for: ', cityName)
+
+    if (router.pathname.startsWith('/cities/')) {
+      router.push(`/cities/${cityName}`)
+      return
+    }
 
     if (weatherData.some(data => data.name === cityName)) {
       console.log('City already added.')
       return
     }
     setIsProcessing(true)
+
     try {
       const data = await getWeatherData(cityName)
       console.log('Received data: ', data)
