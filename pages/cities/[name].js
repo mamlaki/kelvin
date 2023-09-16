@@ -155,7 +155,7 @@ export default function WeatherDetail() {
           '::before': generateBubble('10%', '-10%', '50%', '50%', bubbleAnimation1, '10s'),
           '::after': generateBubble('40%', '60%', '40%', '40%', bubbleAnimation2, '15s'),
           ...Array(5).fill().map((_, index) => ({
-            [`::nth-child(${index})`]: generateBubble(
+            [`::nth-of-type(${index})`]: generateBubble(
               `${Math.random() * 100}%`,
               `${Math.random() * 100}%`,
               `${20 + Math.random() * 30}%`,

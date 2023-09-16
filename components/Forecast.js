@@ -80,8 +80,8 @@ export default function Forecast({ cityName, tempUnit }) {
             '&::-webkit-scrollbar': {
               display: 'none'
             },
-            '-ms-overflow-style': 'none',
-            'scrollbar-width': 'none'
+            'MsOverflowStyle': 'none',
+            'scrollbarWidth': 'none'
           }}
         >
           <Box
