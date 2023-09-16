@@ -22,6 +22,7 @@ import { blue } from '@mui/material/colors'
 const navBlue = blue[500]
 
 import { keyframes } from '@emotion/react'
+import Forecast from '@/components/Forecast'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -287,6 +288,14 @@ export default function WeatherDetail() {
             </Box>
           </CardContent>
         </Card>
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        m: 4
+      }}>
+        <Forecast cityName={weatherData.name} />
       </Box>
       <Box sx={{
         display: 'flex',

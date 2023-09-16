@@ -1,8 +1,8 @@
 const LOCAL_API_URL = '/api/getWeatherData'
 const LOCAL_MAP_API_URL = '/api/getMapUrl'
+const LOCAL_FORECAST_API_URL = '/api/getForecastData'
 
 const getWeatherData = (cityName) => {
-  console.log('API Key:', process.env.OPEN_WEATHER_MAP_API_KEY)
   return fetch(`${LOCAL_API_URL}?cityName=${cityName}`)
     .then(response => {
       if(!response.ok) {
@@ -31,4 +31,19 @@ const getMapUrl = () => {
     })
 } 
 
-export { getWeatherData, getMapUrl }
+const getForecastData = (cityName) => {
+  return fetch(`${LOCAL_FORECAST_API_URL}?cityName=${cityName}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch forecast data')
+      }
+      return response.json()
+    })
+    .then(data => data)
+    .catch(error => {
+      console.error('Error fetching forecast data: ', error)
+      throw error
+    })
+}
+
+export { getWeatherData, getMapUrl, getForecastData }
