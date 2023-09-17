@@ -144,7 +144,21 @@ export default function WeatherDetail() {
         { weatherData.name } { countryCodeToFlag(weatherData.sys.country) }
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-        <Card sx={{
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', m: 2, p: 2, gap: 1 }}>
+          <Typography variant='h2' sx={{ textAlign: 'center', mt: 2 }}>
+            { getWeathericon(weatherData.weather[0].id) }
+          </Typography>
+          <Typography variant='h2' fontWeight='bold'>
+            { 
+              convertTemp(weatherData.main.temp, defaultTempUnit) 
+            }
+            º
+            { 
+              defaultTempUnit 
+            }
+          </Typography>
+        </Box>
+        {/* <Card sx={{
           position: 'relative',
           overflow: 'hidden',
           m: 2,
@@ -178,14 +192,9 @@ export default function WeatherDetail() {
               </Typography>
             </Box>  
           </CardContent>
-        </Card>
+        </Card> */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.6rem', mt: '-2rem' }}>
-          <Typography variant='h2' sx={{
-            textAlign: 'center',
-            mt: 2
-          }}>
-            { getWeathericon(weatherData.weather[0].id) }
-          </Typography>
+          
           <Typography variant='h5' sx={{
             textAlign: 'center',
             mt: 2
