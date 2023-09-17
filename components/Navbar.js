@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react'
+import { SketchPicker } from 'react-color';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
@@ -38,6 +39,7 @@ import Switch from '@mui/material/Switch'
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ColorLensIcon from '@mui/icons-material/ColorLens'
 
 import { blue } from '@mui/material/colors'
 import { green } from '@mui/material/colors'
@@ -262,6 +264,29 @@ export default function Navbar() {
   }
 
   const { colorTheme, setColorTheme } = useColorTheme()
+  const [displayColorPicker, setDisplayColorPicker] = useState(false)
+  const colorPickerRef = useRef()
+  const settingsRef = useRef(null)
+
+  const handleColorChange = (color) => {
+    setColorTheme(color.hex)
+  }
+
+  const handleClickOutside = (event) => {
+    if (colorPickerRef.current && !colorPickerRef.current.contains(event.target)) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+        handleSettingsToggle()
+      }
+      setDisplayColorPicker(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <Box sx={{ flexGrow: 1, margin: -1 }}>
@@ -354,6 +379,7 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
       <Dialog
+        ref={settingsRef}
         open={settingsOpen}
         onClose={handleSettingsToggle}
         aria-labelledby='settings-dialog-title'
@@ -390,20 +416,16 @@ export default function Navbar() {
             }
             label='Dark Mode'
           />
-          <FormControl fullWidth variant='outlined' sx={{ mt: 2 }}>
-            <InputLabel id='color-theme-label'>Colour Theme</InputLabel>
-            <Select
-              labelId='color-theme-label'
-              id='color-theme'
-              value={colorTheme}
-              onChange={(event) => setColorTheme(event.target.value)}
-              label='Colour Theme'
-            >
-              <MenuItem value={ blue[500] }>Blue (Default)</MenuItem>
-              <MenuItem value={ green[500] }>Green</MenuItem>
-              <MenuItem value={ red[500] }>Red</MenuItem>
-            </Select>
-          </FormControl>
+          <Typography varaint='subtitle1' sx={{ mt: 2 }}>Colour Theme</Typography>
+          <Box sx={{ mt: 2, cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setDisplayColorPicker(true)}>
+            <ColorLensIcon />
+            <Box width={36} height={36} style={{ backgroundColor: colorTheme}} />
+          </Box>
+          {displayColorPicker ?
+            <Box ref={colorPickerRef} sx={{ display: 'inline-block' }}>
+              <SketchPicker color={colorTheme} onChangeComplete={handleColorChange} />  
+            </Box>
+          : null}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleSettingsToggle} color='primary'>
