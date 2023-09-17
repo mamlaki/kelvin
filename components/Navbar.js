@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
 
-import Link from 'next/link'
+// import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
 import { useWeather } from '@/utils/contexts/WeatherContext';
@@ -41,13 +41,14 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ColorLensIcon from '@mui/icons-material/ColorLens'
 
-import { blue } from '@mui/material/colors'
-import { green } from '@mui/material/colors'
-import { red } from '@mui/material/colors'
+// import { blue } from '@mui/material/colors'
+// import { green } from '@mui/material/colors'
+// import { red } from '@mui/material/colors'
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 // const navBlue = blue[500]
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
 
+// import { throttle } from 'lodash';
 
 export default function Navbar() {
   // Session & Router 
@@ -265,10 +266,16 @@ export default function Navbar() {
 
   const { colorTheme, setColorTheme } = useColorTheme()
   const [displayColorPicker, setDisplayColorPicker] = useState(false)
+  const [previewColor, setPreviewColor] = useState(colorTheme)
   const colorPickerRef = useRef()
   const settingsRef = useRef(null)
 
-  const handleColorChange = (color) => {
+
+  const handleColorDrag = (color) => {
+    setPreviewColor(color.hex)
+  }
+
+  const handleColorChangeComplete = (color) => {
     setColorTheme(color.hex)
   }
 
@@ -423,7 +430,7 @@ export default function Navbar() {
           </Box>
           {displayColorPicker ?
             <Box ref={colorPickerRef} sx={{ display: 'inline-block' }}>
-              <SketchPicker color={colorTheme} onChangeComplete={handleColorChange} />  
+              <SketchPicker color={previewColor} onChange={handleColorDrag} onChangeComplete={handleColorChangeComplete} />  
             </Box>
           : null}
         </DialogContent>
