@@ -40,8 +40,12 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { blue } from '@mui/material/colors'
+import { green } from '@mui/material/colors'
+import { red } from '@mui/material/colors'
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
-const navBlue = blue[500]
+// const navBlue = blue[500]
+import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
+
 
 export default function Navbar() {
   // Session & Router 
@@ -50,7 +54,7 @@ export default function Navbar() {
   const router = useRouter()
   const [lastSessionState, setLastSessionState] = useState(null)
   const { darkMode, toggleDarkMode } = useThemeMode()
-
+  
   // Snackbar stateful variables
   const [snackBarOpen, setSnackBarOpen] = useState(false)
   const [snackBarMessage, setSnackBarMessage] = useState('')
@@ -257,11 +261,13 @@ export default function Navbar() {
     setSettingsOpen(!settingsOpen)
   }
 
+  const { colorTheme, setColorTheme } = useColorTheme()
+
   return (
     <Box sx={{ flexGrow: 1, margin: -1 }}>
       <AppBar 
         position="static"
-        style={{ backgroundColor: navBlue }}
+        style={{ backgroundColor: colorTheme }}
         >
         <Toolbar>
           <Box sx={{
@@ -384,6 +390,20 @@ export default function Navbar() {
             }
             label='Dark Mode'
           />
+          <FormControl fullWidth variant='outlined' sx={{ mt: 2 }}>
+            <InputLabel id='color-theme-label'>Colour Theme</InputLabel>
+            <Select
+              labelId='color-theme-label'
+              id='color-theme'
+              value={colorTheme}
+              onChange={(event) => setColorTheme(event.target.value)}
+              label='Colour Theme'
+            >
+              <MenuItem value={ blue[500] }>Blue (Default)</MenuItem>
+              <MenuItem value={ green[500] }>Green</MenuItem>
+              <MenuItem value={ red[500] }>Red</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleSettingsToggle} color='primary'>

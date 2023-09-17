@@ -9,13 +9,17 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import TwitterIcon from '@mui/icons-material/Twitter'
 
-import { blue } from '@mui/material/colors'
-const navBlue = blue[500]
+import { useColorTheme } from '@/utils/contexts/ColorThemeContext'
+
+// import { blue } from '@mui/material/colors'
+// const navBlue = blue[500]
 
 export default function Footer() {
+  const { colorTheme } = useColorTheme()
+
   return (
     <footer>
-      <Box sx={{ backgroundColor: navBlue, color: '#FFFFFF', py: 6, textAlign: 'center', margin: -1}}>
+      <Box sx={{ backgroundColor: colorTheme, color: '#FFFFFF', py: 6, textAlign: 'center', margin: -1}}>
         <Container maxWidth='lg'>
           <Grid container spacing={3}>
             <Grid item xs={12}>

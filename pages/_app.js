@@ -10,6 +10,7 @@ import { WeatherProvider } from '@/utils/contexts/WeatherContext';
 import { TempUnitProvider } from '@/utils/contexts/TempUnitContext';
 import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles'
 import { ThemeProvider, useThemeMode } from '@/utils/contexts/ThemeContext'
+import { ColorThemeProvider } from '@/utils/contexts/ColorThemeContext';
 import lightTheme from '@/themes/lightTheme';
 import darkTheme from '@/themes/darkTheme';
 
@@ -26,21 +27,24 @@ function MainContext({ Component, pageProps }) {
   return (
     <MUIThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <CssBaseline />
-      <WeatherProvider>
-        <TempUnitProvider>
-          <Navbar />
-          <Box
-            display='flex'
-            flexDirection='column'
-            minHeight='100vh'
-          >
-            <Box flexGrow={1}>
-              <Component {...pageProps} />
+      <ColorThemeProvider>
+        <WeatherProvider>
+          <TempUnitProvider>
+            <Navbar />
+            <Box
+              display='flex'
+              flexDirection='column'
+              minHeight='100vh'
+            >
+              <Box flexGrow={1}>
+                <Component {...pageProps} />
+              </Box>
+              <Footer />
             </Box>
-            <Footer />
-          </Box>
-        </TempUnitProvider>
-      </WeatherProvider>
+          </TempUnitProvider>
+        </WeatherProvider>
+      </ColorThemeProvider>
+      
     </MUIThemeProvider>
   )
 }
