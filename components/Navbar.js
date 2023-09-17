@@ -31,13 +31,16 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import Select from '@mui/material/Select'
 import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import InputLabel from '@mui/material/InputLabel'
+import Switch from '@mui/material/Switch'
 
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 import { blue } from '@mui/material/colors'
+import { useThemeMode } from '@/utils/contexts/ThemeContext';
 const navBlue = blue[500]
 
 export default function Navbar() {
@@ -46,6 +49,7 @@ export default function Navbar() {
   const { weatherData, setWeatherData } = useWeather()
   const router = useRouter()
   const [lastSessionState, setLastSessionState] = useState(null)
+  const { darkMode, toggleDarkMode } = useThemeMode()
 
   // Snackbar stateful variables
   const [snackBarOpen, setSnackBarOpen] = useState(false)
@@ -369,6 +373,17 @@ export default function Navbar() {
               <MenuItem value={'K'}>Kelvin</MenuItem>
             </Select>
           </FormControl>
+          <FormControlLabel 
+            control={
+              <Switch 
+                checked={darkMode}
+                onChange={toggleDarkMode}
+                name='darkMode'
+                color='primary' 
+              />
+            }
+            label='Dark Mode'
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleSettingsToggle} color='primary'>
