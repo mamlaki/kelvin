@@ -148,7 +148,11 @@ export default function WeatherDetail() {
           <Typography variant='h2' sx={{ textAlign: 'center', mt: 2 }}>
             { getWeathericon(weatherData.weather[0].id) }
           </Typography>
-          <Typography variant='h2' fontWeight='bold'>
+          <Typography variant='h2' fontWeight='bold' sx={{
+            background: getBackgroundByTemp(convertTemp(weatherData.main.temp, defaultTempUnit), defaultTempUnit),
+            backgroundClip: 'text',
+            textFillColor: 'transparent'
+          }}>
             { 
               convertTemp(weatherData.main.temp, defaultTempUnit) 
             }
