@@ -10,6 +10,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import TwitterIcon from '@mui/icons-material/Twitter'
 
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext'
+import { getLuminance } from '@mui/material'
 
 // import { blue } from '@mui/material/colors'
 // const navBlue = blue[500]
@@ -17,9 +18,11 @@ import { useColorTheme } from '@/utils/contexts/ColorThemeContext'
 export default function Footer() {
   const { colorTheme } = useColorTheme()
 
+  const isBright = getLuminance(colorTheme) > 0.7
+
   return (
     <footer>
-      <Box sx={{ backgroundColor: colorTheme, color: '#FFFFFF', py: 6, textAlign: 'center', margin: -1}}>
+      <Box sx={{ backgroundColor: colorTheme, color: isBright ? 'black' : 'white', py: 6, textAlign: 'center', margin: -1}}>
         <Container maxWidth='lg'>
           <Grid container spacing={3}>
             <Grid item xs={12}>

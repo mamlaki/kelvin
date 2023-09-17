@@ -12,6 +12,7 @@ import { useWeather } from '@/utils/contexts/WeatherContext';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { getWeatherData } from '@/utils/api/weatherapi';
 import { useDebounce } from '@/utils/useDebounce';
+import { getLuminance } from '@mui/material';
 import cities from '../utils/jsondata/cities'
 
 import AppBar from '@mui/material/AppBar';
@@ -295,6 +296,10 @@ export default function Navbar() {
     }
   }, [])
 
+
+
+  const isBright = getLuminance(colorTheme) > 0.7
+
   return (
     <Box sx={{ flexGrow: 1, margin: -1 }}>
       <AppBar 
@@ -367,7 +372,7 @@ export default function Navbar() {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
-              color="inherit"
+              sx={{ color: isBright ? 'black' : 'white' }}
             >
               <AccountCircle />
             </IconButton>
@@ -377,8 +382,8 @@ export default function Navbar() {
               aria-label="settings menu"
               aria-controls={menuId}
               aria-haspopup="true"
-              color="inherit"
               onClick={handleSettingsToggle}
+              sx={{ color: isBright ? 'black' : 'white' }}
             >
               <SettingsIcon />
             </IconButton>
