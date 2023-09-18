@@ -10,15 +10,20 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import TwitterIcon from '@mui/icons-material/Twitter'
 
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext'
-import { getLuminance } from '@mui/material'
+import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA'
+import { rgbToHex } from '@/utils/colorfuncs/rgbToHex'
+import { blendWithWhite } from '@/utils/colorfuncs/blendWithWhite'
 
-// import { blue } from '@mui/material/colors'
-// const navBlue = blue[500]
+import { getLuminance } from '@mui/material'
 
 export default function Footer() {
   const { colorTheme } = useColorTheme()
 
-  const isBright = getLuminance(colorTheme) > 0.7
+  const colorThemeRGBA = ensureRGBA(colorTheme)
+  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithWhite(colorThemeRGBA) : colorThemeRGBA  
+  const effectiveHex = rgbToHex(effectiveRGB.r, effectiveRGB.g, effectiveRGB.b)
+
+  const isBright = getLuminance(effectiveHex) > 0.7
 
   return (
     <footer>

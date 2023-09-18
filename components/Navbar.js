@@ -6,6 +6,9 @@ import { signOut } from 'next-auth/react'
 import { useWeather } from '@/utils/contexts/WeatherContext';
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
 import { useDebounce } from '@/utils/useDebounce';
+import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA';
+import { rgbToHex } from '@/utils/colorfuncs/rgbToHex';
+import { blendWithWhite } from '@/utils/colorfuncs/blendWithWhite';
 import { getWeatherData } from '@/utils/api/weatherapi';
 
 import { getLuminance } from '@mui/material';
@@ -239,7 +242,11 @@ export default function Navbar() {
     setSettingsOpen(!settingsOpen)
   }
 
-  const isBright = getLuminance(colorTheme) > 0.7
+  const colorThemeRGBA = ensureRGBA(colorTheme)
+  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithWhite(colorThemeRGBA) : colorThemeRGBA  
+  const effectiveHex = rgbToHex(effectiveRGB.r, effectiveRGB.g, effectiveRGB.b)
+
+  const isBright = getLuminance(effectiveHex) > 0.7
 
   return (
     <Box sx={{ flexGrow: 1, margin: -1 }}>

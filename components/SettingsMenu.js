@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { SketchPicker } from 'react-color';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
+import WrappedColorPicker from './CustomColorPicker';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -24,10 +24,18 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const { darkMode, toggleDarkMode } = useThemeMode()
 
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [previewColor, setPreviewColor] = useState(colorTheme);
+  const [previewColor, setPreviewColor] = useState({
+    hex: colorTheme,
+    rgb: {r: 0, g: 0, b: 0, a: 1}
+  });
   const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
+  const [recentColors, setRecentColors] = useState([])
   const colorPickerRef = useRef();
   const settingsRef = useRef(null);
+
+  const convertRGBtoRGBAString = (rgb) => {
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`
+  }
 
   const handleColorBoxClick = (event) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -39,11 +47,18 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   const handleColorDrag = (color) => {
-    setPreviewColor(color.hex)
+    setPreviewColor(color)
   }
 
   const handleColorChangeComplete = (color) => {
-    setColorTheme(color.hex)
+    setColorTheme(convertRGBtoRGBAString(color.rgb))
+    setRecentColors(prevColors => [convertRGBtoRGBAString(color.rgb), ...prevColors].slice(0, 10))
+    console.log(recentColors)
+  }
+
+  const handleRecentColorClick = (color) => {
+    setPreviewColor(color)
+    setColorTheme(color)
   }
 
   const handleClickOutside = (event) => {
@@ -108,8 +123,20 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         </Box>
         {displayColorPicker ?
           <Box ref={colorPickerRef} sx={{ position: 'relative' }}>
-            <div style={{ position: 'fixed', top: `${pickerPosition.top}`, left: `${pickerPosition.left}`, zIndex: 1000 }}>
-              <SketchPicker color={previewColor} position='absolute' onChange={handleColorDrag} onChangeComplete={handleColorChangeComplete} />  
+            <div style={{
+              position: 'fixed', 
+              top: `${pickerPosition.top}`, 
+              left: `${pickerPosition.left}`, 
+              zIndex: 1000
+            }}>
+              <WrappedColorPicker 
+                color={previewColor.rgb} 
+                onChange={handleColorDrag} 
+                onChangeComplete={handleColorChangeComplete} 
+                recentColors={recentColors}
+                onRecentColorClick={handleRecentColorClick}
+                backgroundColor={darkMode ? '#424242' : 'white'}
+              />
             </div>
           </Box>
         : null}
