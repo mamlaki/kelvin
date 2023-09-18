@@ -268,8 +268,18 @@ export default function Navbar() {
   const { colorTheme, setColorTheme } = useColorTheme()
   const [displayColorPicker, setDisplayColorPicker] = useState(false)
   const [previewColor, setPreviewColor] = useState(colorTheme)
+  const [pickerPosition, setPickerPosition]  = useState({ top: 0, left: 0 })
   const colorPickerRef = useRef()
   const settingsRef = useRef(null)
+  
+  const handleColorBoxClick = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    setPickerPosition({
+      top: rect.top + window.scrollY,
+      left: rect.left + window.scrollX
+    })
+    setDisplayColorPicker(true)
+  }
 
 
   const handleColorDrag = (color) => {
@@ -402,7 +412,7 @@ export default function Navbar() {
         }}
       >
         <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
-        <DialogContent sx={{ minHeight: 400 }}>
+        <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
           <FormControl fullWidth variant='outlined' sx={{ mt: 2 }}>
             <InputLabel id='default-temp-unit-label'>Default Temperature Unit</InputLabel>
             <Select
@@ -429,13 +439,15 @@ export default function Navbar() {
             label='Dark Mode'
           />
           <Typography varaint='subtitle1' sx={{ mt: 2 }}>Colour Theme</Typography>
-          <Box sx={{ mt: 2, cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setDisplayColorPicker(true)}>
+          <Box sx={{ mt: 2, cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={handleColorBoxClick}>
             <ColorLensIcon />
             <Box width={36} height={36} style={{ backgroundColor: colorTheme}} />
           </Box>
           {displayColorPicker ?
-            <Box ref={colorPickerRef} sx={{ display: 'inline-block' }}>
-              <SketchPicker color={previewColor} onChange={handleColorDrag} onChangeComplete={handleColorChangeComplete} />  
+            <Box ref={colorPickerRef} sx={{ position: 'relative' }}>
+              <div style={{ position: 'fixed', top: `${pickerPosition.top}`, left: `${pickerPosition.left}`, zIndex: 1000 }}>
+                <SketchPicker color={previewColor} position='absolute' onChange={handleColorDrag} onChangeComplete={handleColorChangeComplete} />  
+              </div>
             </Box>
           : null}
         </DialogContent>
