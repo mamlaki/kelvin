@@ -104,6 +104,10 @@ export default function WeatherDetail() {
       temp = (temp - 32) * 5 / 9
     }
 
+    if (unit === 'K') {
+      temp = temp - 273.15
+    }
+
     if (temp >= 25) {
       return 'linear-gradient(45deg, #FF4500, #FF8C00)'
     } else if (temp >= 15) {
