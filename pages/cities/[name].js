@@ -235,11 +235,11 @@ export default function WeatherDetail() {
         justifyContent: 'center',
         mt: 4
       }}>
-        <Card sx={{ m: 2, minWidth: 200 }}> 
+        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
           <CardContent>
             <Typography variant='h6'>Feels Like:</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4'>
+              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>
                 {
                   convertTemp(weatherData.main.feels_like, defaultTempUnit)
                 }
@@ -251,19 +251,19 @@ export default function WeatherDetail() {
             </Box>
           </CardContent>
         </Card>
-        <Card sx={{ m: 2, minWidth: 200 }}>
+        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
           <CardContent>
             <Typography variant='h6'>Humidity:</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4'>{ weatherData.main.humidity }%</Typography>
+              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>{ weatherData.main.humidity }%</Typography>
             </Box>
           </CardContent>
         </Card>
-        <Card sx={{ m: 2, minWidth: 200}}>
+        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
           <CardContent>
             <Typography variant='h6'>Wind Speed:</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4'>{ weatherData.wind.speed } m/s</Typography>
+              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>{ weatherData.wind.speed } m/s</Typography>
             </Box>
           </CardContent>
         </Card>
@@ -272,30 +272,30 @@ export default function WeatherDetail() {
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        mt: 4
+        mt: { xs: 0, sm: 4}
       }}>
         <Card sx={{
            m: 2, 
-           minWidth: 200, 
+           width: { xs: 440, sm: 200 }, 
            background: 'linear-gradient(90deg, #FF7E5F, #FEB47B)', 
            color: 'white'
           }}>
           <CardContent>
-            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', gap: '0.3rem'}}>Sunrise <WbSunnyIcon />:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, gap: '0.3rem'}}>Sunrise <WbSunnyIcon />:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
               <Typography variant='h4'>{ unixToTime(weatherData.sys.sunrise) }<ArrowDropUpIcon /></Typography>
             </Box>
           </CardContent>
         </Card>
         <Card sx={{
            m: 2, 
-           minWidth: 200, 
+           width: { xs: 440, sm: 200 }, 
            background: 'linear-gradient(90deg, #5A7D9A, #243447)', 
            color: 'white'
           }}>
           <CardContent>
-            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>Sunset <DarkModeIcon />:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, gap: '0.3rem'}}>Sunset <DarkModeIcon />:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
               <Typography variant='h4'>{ unixToTime(weatherData.sys.sunset) }<ArrowDropDownIcon /></Typography>
             </Box>
           </CardContent>

@@ -53,7 +53,7 @@ export default function Forecast({ cityName, tempUnit }) {
         justifyContent: 'center',
         mt: 4,
         overflowX: 'hidden',
-        maxWidth: isMobile ? '60%' : 700,
+        maxWidth: isMobile ? '100%' : 700,
         padding: 1,
         flexDirection: 'row',
         alignItems: 'center'
