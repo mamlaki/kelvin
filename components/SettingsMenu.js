@@ -24,6 +24,8 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
   const { darkMode, toggleDarkMode } = useThemeMode()
 
+  const [isInitialized, setIsInitialized] = useState(false)
+
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [previewColor, setPreviewColor] = useState({
     hex: colorTheme,
@@ -33,6 +35,34 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const [recentColors, setRecentColors] = useState([])
   const colorPickerRef = useRef();
   const settingsRef = useRef(null);
+
+  useEffect(() => {
+    const savedDefaultTempUnit = localStorage.getItem('defaultTempUnit')
+    const savedDarkMode = localStorage.getItem('darkMode')
+    const savedColorTheme = localStorage.getItem('colorTheme')
+    const savedRecentColors = localStorage.getItem('recentColors')
+
+    setDefaultTempUnit(prev => savedDefaultTempUnit || prev)
+    if (savedDarkMode !== null) {
+      const parsedDarkMode = JSON.parse(savedDarkMode)
+      if (typeof parsedDarkMode === 'boolean') {
+        toggleDarkMode(parsedDarkMode)
+      }
+    }
+    setColorTheme(prev => savedColorTheme || prev)
+    setRecentColors(prev => savedRecentColors ? JSON.parse(savedRecentColors) : prev)
+
+    setIsInitialized(true)
+  }, [])
+
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem('defaultTempUnit', defaultTempUnit)
+      localStorage.setItem('darkMode', JSON.stringify(darkMode))
+      localStorage.setItem('colorTheme', colorTheme)
+      localStorage.setItem('recentColors', JSON.stringify(recentColors))
+    }
+  }, [defaultTempUnit, darkMode, colorTheme, recentColors, isInitialized])
 
   const convertRGBtoRGBAString = (rgb) => {
     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`
@@ -54,7 +84,6 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const handleColorChangeComplete = (color) => {
     setColorTheme(convertRGBtoRGBAString(color.rgb))
     setRecentColors(prevColors => [convertRGBtoRGBAString(color.rgb), ...prevColors].slice(0, 10))
-    console.log(recentColors)
   }
 
   const handleRecentColorClick = (color) => {
