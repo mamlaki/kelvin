@@ -8,7 +8,7 @@ import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
 import { useDebounce } from '@/utils/useDebounce';
 import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA';
 import { rgbToHex } from '@/utils/colorfuncs/rgbToHex';
-import { blendWithWhite } from '@/utils/colorfuncs/blendWithWhite';
+import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground';
 import { getWeatherData } from '@/utils/api/weatherapi';
 
 import { getLuminance } from '@mui/material';
@@ -243,7 +243,10 @@ export default function Navbar() {
   }
 
   const colorThemeRGBA = ensureRGBA(colorTheme)
-  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithWhite(colorThemeRGBA) : colorThemeRGBA  
+
+  const darkModeBackground = { r: 48, g: 48, b: 48 }
+  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithBackground(colorThemeRGBA, darkModeBackground) : colorThemeRGBA  
+
   const effectiveHex = rgbToHex(effectiveRGB.r, effectiveRGB.g, effectiveRGB.b)
 
   const isBright = getLuminance(effectiveHex) > 0.7

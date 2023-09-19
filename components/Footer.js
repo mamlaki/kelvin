@@ -12,7 +12,7 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext'
 import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA'
 import { rgbToHex } from '@/utils/colorfuncs/rgbToHex'
-import { blendWithWhite } from '@/utils/colorfuncs/blendWithWhite'
+import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground'
 
 import { getLuminance } from '@mui/material'
 
@@ -20,7 +20,10 @@ export default function Footer() {
   const { colorTheme } = useColorTheme()
 
   const colorThemeRGBA = ensureRGBA(colorTheme)
-  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithWhite(colorThemeRGBA) : colorThemeRGBA  
+
+  const darkModeBackground = { r: 48, g: 48, b: 48 }
+  const effectiveRGB = colorThemeRGBA.a < 1 ? blendWithBackground(colorThemeRGBA, darkModeBackground) : colorThemeRGBA  
+
   const effectiveHex = rgbToHex(effectiveRGB.r, effectiveRGB.g, effectiveRGB.b)
 
   const isBright = getLuminance(effectiveHex) > 0.7
