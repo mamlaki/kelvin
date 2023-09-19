@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
+import { rgbaStringToObject } from '@/utils/colorfuncs/rgbaStringToObject';
 import WrappedColorPicker from './CustomColorPicker';
 
 import Dialog from '@mui/material/Dialog';
@@ -54,19 +55,6 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     setColorTheme(convertRGBtoRGBAString(color.rgb))
     setRecentColors(prevColors => [convertRGBtoRGBAString(color.rgb), ...prevColors].slice(0, 10))
     console.log(recentColors)
-  }
-
-  const rgbaStringToObject = (rgba) => {
-    const matches = rgba.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\d\.]+)\s*)?\)$/)
-
-    if (!matches) return null
-
-    const r = parseInt(matches[1])
-    const g = parseInt(matches[2])
-    const b = parseInt(matches[3])
-    const a = matches[5] !== undefined ? parseFloat(matches[5]) : 1
-
-    return { r, g, b, a }
   }
 
   const handleRecentColorClick = (color) => {
