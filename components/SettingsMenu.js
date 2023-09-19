@@ -19,8 +19,11 @@ import Box from '@mui/material/Box'
 
 import ColorLensIcon from '@mui/icons-material/ColorLens'
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useSession } from 'next-auth/react';
 
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
+  const { data: session } = useSession()
+
   const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
   const { darkMode, toggleDarkMode } = useThemeMode()
 
@@ -41,6 +44,69 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const DEFAULT_COLOR_THEME = '#4994EC'
   const DEFAULT_RECENT_COLORS = []
 
+  const saveSettingsToBackend = async () => {
+    if (!session) {
+      localStorage.setItem('defaultTempUnit', defaultTempUnit)
+      localStorage.setItem('darkMode', JSON.stringify(darkMode))
+      localStorage.setItem('colorTheme', colorTheme)
+      localStorage.setItem('recentColors', JSON.stringify(recentColors))
+      alert('Settings saved locally. login to save settings across devices.')
+      return
+    }
+
+    const settingsData = {
+      defaultTempUnit: defaultTempUnit,
+      darkMode: darkMode,
+      colorTheme: colorTheme,
+      recentColors: recentColors,
+      userId: session.user.id 
+    }
+
+    try {
+      const response = await fetch('/api/updateSettings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(settingsData)
+      })
+
+      if (!response.ok) {
+        const responseData = await response.json()
+        throw new Error(responseData.message || 'Failed to save settings.')
+      }
+      alert('Settings saved successfully!')
+    } catch (error) {
+      console.error('Failed to save settings: ', error)
+    }
+  }
+
+  const fetchAndApplyUserSettings = async (userId) => {
+    try {
+      const response = await fetch(`/api/getSettings?userId=${userId}`)
+      const data = await response.json()
+
+      setDefaultTempUnit(data.defaultTempUnit)
+      toggleDarkMode(data.darkMode)
+      setColorTheme(data.colorTheme)
+      setRecentColors(data.recentColors)
+    } catch (error) {
+      console.error('Error fetching user settings: ', error)
+    }
+  }
+
+  const loadSettingsFromLocalStorage = () => {
+    const savedDefaultTempUnit = localStorage.getItem('defaultTempUnit')
+    const savedDarkMode = JSON.parse(localStorage.getItem('darkMode') || false)
+    const savedColortheme = localStorage.getItem('colorTheme')
+    const savedRecentColors = JSON.parse(localStorage.getItem('recentColors') || '[]')
+
+    setDefaultTempUnit(savedDefaultTempUnit || DEFAULT_TEMP_UNIT)
+    toggleDarkMode(savedDarkMode || DEFAULT_DARK_MODE)
+    setColorTheme(savedColortheme || DEFAULT_COLOR_THEME)
+    setRecentColors(savedRecentColors || DEFAULT_RECENT_COLORS)
+  }
+
   const resetToDefaults = () => {
     setDefaultTempUnit(DEFAULT_TEMP_UNIT)
     toggleDarkMode(DEFAULT_DARK_MODE)
@@ -54,32 +120,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   useEffect(() => {
-    const savedDefaultTempUnit = localStorage.getItem('defaultTempUnit')
-    const savedDarkMode = localStorage.getItem('darkMode')
-    const savedColorTheme = localStorage.getItem('colorTheme')
-    const savedRecentColors = localStorage.getItem('recentColors')
-
-    setDefaultTempUnit(prev => savedDefaultTempUnit || prev)
-    if (savedDarkMode !== null) {
-      const parsedDarkMode = JSON.parse(savedDarkMode)
-      if (typeof parsedDarkMode === 'boolean') {
-        toggleDarkMode(parsedDarkMode)
-      }
+    if (session) {
+      fetchAndApplyUserSettings(session.user.id)
+    } else {
+      loadSettingsFromLocalStorage()
     }
-    setColorTheme(prev => savedColorTheme || prev)
-    setRecentColors(prev => savedRecentColors ? JSON.parse(savedRecentColors) : prev)
-
-    setIsInitialized(true)
-  }, [])
-
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem('defaultTempUnit', defaultTempUnit)
-      localStorage.setItem('darkMode', JSON.stringify(darkMode))
-      localStorage.setItem('colorTheme', colorTheme)
-      localStorage.setItem('recentColors', JSON.stringify(recentColors))
-    }
-  }, [defaultTempUnit, darkMode, colorTheme, recentColors, isInitialized])
+  }, [session])
 
   const convertRGBtoRGBAString = (rgb) => {
     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`
@@ -129,6 +175,11 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  const handleSaveAndExit = () => {
+    saveSettingsToBackend()
+    handleSettingsToggle()
+  }
 
   return (
     <Dialog
@@ -209,7 +260,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         <Button onClick={resetToDefaults} color='primary'>
           Default Settings
         </Button>
-        <Button onClick={handleSettingsToggle} color='success' variant='contained'>
+        <Button onClick={handleSaveAndExit} color='success' variant='contained'>
           Save & Exit
         </Button>
       </DialogActions>
