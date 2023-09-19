@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box'
 
 import ColorLensIcon from '@mui/icons-material/ColorLens'
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
   const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
@@ -105,22 +106,33 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
             <MenuItem value={'K'}>Kelvin</MenuItem>
           </Select>
         </FormControl>
-        <FormControlLabel 
-          control={
+        <Box mt={2}>
+          <Box display='flex' alignItems='flex-end' gap={1}>
+            <DarkModeIcon />
+            <Typography varaint='subtitle1' sx={{ mt: 2 }}>Dark Mode</Typography>
+          </Box>
             <Switch 
               checked={darkMode}
               onChange={toggleDarkMode}
               name='darkMode'
               color='primary' 
+              sx={{ marginLeft: '-10px' }}
             />
-          }
-          label='Dark Mode'
-        />
-        <Typography varaint='subtitle1' sx={{ mt: 2 }}>Colour Theme</Typography>
-        <Box sx={{ mt: 2, cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={handleColorBoxClick}>
-          <ColorLensIcon />
-          <Box width={36} height={36} style={{ backgroundColor: colorTheme}} />
         </Box>
+        <Box sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+          <ColorLensIcon />
+          <Typography varaint='subtitle1' sx={{ mt: 2 }}>Colour Theme</Typography>
+        </Box>
+        <Box 
+          width={36} 
+          height={36} 
+          sx={{ 
+            backgroundColor: colorTheme, 
+            cursor: 'pointer',
+            border: '3px solid #CCC',
+            borderRadius: '2px'
+          }} 
+          onClick={handleColorBoxClick} />
         {displayColorPicker ?
           <Box ref={colorPickerRef} sx={{ position: 'relative' }}>
             <div style={{
