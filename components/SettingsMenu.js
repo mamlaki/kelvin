@@ -36,6 +36,23 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const colorPickerRef = useRef();
   const settingsRef = useRef(null);
 
+  const DEFAULT_TEMP_UNIT = 'C'
+  const DEFAULT_DARK_MODE = false
+  const DEFAULT_COLOR_THEME = '#4994EC'
+  const DEFAULT_RECENT_COLORS = []
+
+  const resetToDefaults = () => {
+    setDefaultTempUnit(DEFAULT_TEMP_UNIT)
+    toggleDarkMode(DEFAULT_DARK_MODE)
+    setColorTheme(DEFAULT_COLOR_THEME)
+    setRecentColors(DEFAULT_RECENT_COLORS)
+
+    localStorage.setItem('defaultTempUnit', DEFAULT_TEMP_UNIT)
+    localStorage.setItem('darkMode', JSON.stringify(DEFAULT_DARK_MODE))
+    localStorage.setItem('colorTheme', DEFAULT_COLOR_THEME)
+    localStorage.setItem('recentColors', JSON.stringify(DEFAULT_RECENT_COLORS))
+  }
+
   useEffect(() => {
     const savedDefaultTempUnit = localStorage.getItem('defaultTempUnit')
     const savedDarkMode = localStorage.getItem('darkMode')
@@ -188,9 +205,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           </Box>
         : null}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleSettingsToggle} color='primary'>
-          Close
+      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button onClick={resetToDefaults} color='primary'>
+          Default Settings
+        </Button>
+        <Button onClick={handleSettingsToggle} color='success' variant='contained'>
+          Save & Exit
         </Button>
       </DialogActions>
     </Dialog>
