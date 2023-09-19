@@ -10,7 +10,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
 import Switch from '@mui/material/Switch';
 import MenuItem from '@mui/material/MenuItem'
@@ -57,8 +56,27 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     console.log(recentColors)
   }
 
+  const rgbaStringToObject = (rgba) => {
+    const matches = rgba.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\d\.]+)\s*)?\)$/)
+
+    if (!matches) return null
+
+    const r = parseInt(matches[1])
+    const g = parseInt(matches[2])
+    const b = parseInt(matches[3])
+    const a = matches[5] !== undefined ? parseFloat(matches[5]) : 1
+
+    return { r, g, b, a }
+  }
+
   const handleRecentColorClick = (color) => {
-    setPreviewColor(color)
+    const rgb = rgbaStringToObject(color)
+    if (!rgb) return
+
+    setPreviewColor({
+      hex: color,
+      rgb: rgb
+    })
     setColorTheme(color)
   }
 
