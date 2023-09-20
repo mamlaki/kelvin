@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { signOut } from 'next-auth/react';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 import { rgbaStringToObject } from '@/utils/colorfuncs/rgbaStringToObject';
@@ -22,6 +24,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useSession } from 'next-auth/react';
 
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
+  const router = useRouter()
   const { data: session } = useSession()
 
   const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
@@ -86,10 +89,14 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       const response = await fetch(`/api/getSettings?userId=${userId}`)
       const data = await response.json()
 
-      setDefaultTempUnit(data.defaultTempUnit)
-      toggleDarkMode(data.darkMode)
-      setColorTheme(data.colorTheme)
-      setRecentColors(data.recentColors)
+      if (data) {
+        if (data.defaultTempUnit) setDefaultTempUnit(data.defaultTempUnit)
+        if (typeof data.darkMode !== 'undefined') toggleDarkMode(data.darkMode)
+        if (data.colorTheme) setColorTheme(data.colorTheme)
+        if (Array.isArray(data.recentColors)) setRecentColors(data.recentColors);
+      } else {
+        loadSettingsFromLocalStorage();
+      }
     } catch (error) {
       console.error('Error fetching user settings: ', error)
     }
@@ -145,8 +152,9 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   const handleColorChangeComplete = (color) => {
-    setColorTheme(convertRGBtoRGBAString(color.rgb))
-    setRecentColors(prevColors => [convertRGBtoRGBAString(color.rgb), ...prevColors].slice(0, 10))
+    const rgbaColor = convertRGBtoRGBAString(color.rgb)
+    setColorTheme(rgbaColor)
+    setRecentColors(prevColors => [rgbaColor, ...prevColors].slice(0, 10))
   }
 
   const handleRecentColorClick = (color) => {
@@ -179,6 +187,37 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const handleSaveAndExit = () => {
     saveSettingsToBackend()
     handleSettingsToggle()
+  }
+  
+  const deleteUser = async () => {
+    try {
+      const response = await fetch(`/api/deleteUser?userId=${session.user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: session.user.id })
+      })
+
+      if (response.ok) {
+        alert('Your account was successfully deleted.')
+        handleSettingsToggle()
+        await signOut({ redirect: false, callbackUrl: '/' })
+      } else {
+        const data = await response.json()
+        throw new Error(data.message || 'Failed to delete account.')
+      }
+    } catch (error) {
+      console.error('Error deleting user account: ', error)
+      alert('An error occurred. Please try again later.')
+    }
+  }
+
+  const handleDeleteAccount = () => {
+    const isConfirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.')
+    if (isConfirmed) {
+      deleteUser()
+    }
   }
 
   return (
@@ -230,7 +269,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           width={36} 
           height={36} 
           sx={{ 
-            backgroundColor: colorTheme, 
+            backgroundColor: colorTheme || DEFAULT_COLOR_THEME, 
             cursor: 'pointer',
             border: '3px solid #CCC',
             borderRadius: '2px'
@@ -255,6 +294,11 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
             </div>
           </Box>
         : null}
+        {session && (
+          <Box sx={{ mt: 4 }}>
+            <Button onClick={handleDeleteAccount} color='secondary' variant='contained'>Delete Account</Button>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Button onClick={resetToDefaults} color='primary'>

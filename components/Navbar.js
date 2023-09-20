@@ -79,12 +79,7 @@ export default function Navbar() {
   const handleSignOutClick = async () => {
     setSnackBarMessage('Signing out...')
     setSnackBarOpen(true)
-    await signOut({ redirect: false })
-    setSnackBarMessage('Signed out successfully')
-    setTimeout(() => {
-      setSnackBarOpen(false)
-      router.push('/')
-    }, 1000)
+    await signOut({ redirect: false, callbackUrl: '/' })
   }
 
   useEffect(() => {
@@ -228,13 +223,11 @@ export default function Navbar() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Dashboard</MenuItem>
-      <MenuItem onClick={handleMenuClose}>
-        { !session ?
-            <button onClick={handleSignInClick}>Sign In</button>
+      { !session ?
+            <MenuItem onClick={handleSignInClick}>Sign In</MenuItem>
             :
-            <button onClick={handleSignOutClick}>Sign Out</button>
+            <MenuItem onClick={handleSignOutClick}>Sign Out</MenuItem>
         }
-      </MenuItem>
     </Menu>
   );
 
