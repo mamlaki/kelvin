@@ -1,7 +1,7 @@
 // React & Next.js Imports
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 // Contexts & Utils
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
@@ -18,8 +18,6 @@ import { getLuminance } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import Toolbar from '@mui/material/Toolbar';
@@ -31,11 +29,11 @@ import SettingsIcon from '@mui/icons-material/Settings';
 // Local Components / Other
 import SettingsMenu from './SettingsMenu';
 import Searchbar from './Searchbar';
+import UserMenu from './UserMenu';
 
 export default function Navbar() {
-  // Session & Router 
+  // Session, Router, Contexts 
   const router = useRouter()
-
   const { data: session } = useSession()
   const { weatherData, setWeatherData } = useWeather()
   const { colorTheme, setColorTheme } = useColorTheme()
@@ -46,7 +44,6 @@ export default function Navbar() {
 
   // Menu stateful variables 
   const [anchorEl, setAnchorEl] = useState(null);
-  const isMenuOpen = Boolean(anchorEl);
 
   // Settings stateful variables
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -54,21 +51,6 @@ export default function Navbar() {
   useEffect(() => {
     console.log('Updated weatherData: ', weatherData)
   }, [weatherData])
-
-  // Snackbar functions
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') return
-    setSnackBarOpen(false)
-  }
-
-  const handleSignInClick = () => {
-    router.push('/signin')
-  }
-
-  const handleSignOutClick = async () => {
-    openSnackbar('Signing out...')
-    await signOut({ redirect: false, callbackUrl: '/' })
-  }
 
   useEffect(() => {
     let timer
@@ -112,30 +94,6 @@ export default function Navbar() {
   const handleMenuClose = () => setAnchorEl(null)
 
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Dashboard</MenuItem>
-      { !session ?
-            <MenuItem onClick={handleSignInClick}>Sign In</MenuItem>
-            :
-            <MenuItem onClick={handleSignOutClick}>Sign Out</MenuItem>
-        }
-    </Menu>
-  );
 
   const handleSettingsToggle = () => {
     setSettingsOpen(!settingsOpen)
@@ -196,11 +154,15 @@ export default function Navbar() {
         colorTheme={colorTheme}
         setColorTheme={setColorTheme}
       />
-      {renderMenu}
+      <UserMenu 
+        anchorEl={anchorEl}
+        handleProfileMenuOpen={handleProfileMenuOpen}
+        handleMenuClose={handleMenuClose}
+      />
       <Snackbar 
         open={snackBarOpen} 
         autoHideDuration={5000} 
-        onClose={handleSnackBarClose}
+        onClose={closeSnackbar}
       >
         <MuiAlert
           elevation={6}
