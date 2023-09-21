@@ -1,17 +1,20 @@
+// React & Next.js Imports
 import { useState, useEffect } from 'react'
 
+// Contexts, Utils & APIs
 import { getForecastData } from '@/utils/api/weatherapi'
 
+// MUI Components
 import Card from '@mui/material/Card'
 
+// Local Components / Other
 import ForecastItem from './ForecastItem'
-
 import {
-  ForecastContainer,
   ForecastArrowLeft,
   ForecastArrowRight,
+  ForecastBox,
   ForecastCardContent,
-  ForecastBox
+  ForecastContainer
 } from './Forecast.styles'
 
 export default function Forecast({ cityName, tempUnit }) {
