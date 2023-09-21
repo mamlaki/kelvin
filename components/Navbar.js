@@ -1,34 +1,40 @@
-import * as React from 'react';
+// React & Next.js Imports
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react'
-import { useWeather } from '@/utils/contexts/WeatherContext';
+import { signOut, useSession } from 'next-auth/react';
+
+// Contexts & Utils
+import cities from '../utils/jsondata/cities'
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
-import { useDebounce } from '@/utils/useDebounce';
+import { useWeather } from '@/utils/contexts/WeatherContext';
+import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground';
 import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA';
 import { rgbToHex } from '@/utils/colorfuncs/rgbToHex';
-import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground';
 import { getWeatherData } from '@/utils/api/weatherapi';
+import { useDebounce } from '@/utils/useDebounce';
 
+// MUI Utils
 import { getLuminance } from '@mui/material';
-import cities from '../utils/jsondata/cities'
 
+// MUI Components
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
 import Autocomplete from '@mui/material/Autocomplete'
-import TextField from '@mui/material/TextField'
-import Snackbar from '@mui/material/Snackbar'
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import MuiAlert from '@mui/material/Alert'
-import SettingsMenu from './SettingsMenu';
+import Snackbar from '@mui/material/Snackbar'
+import TextField from '@mui/material/TextField'
+import Toolbar from '@mui/material/Toolbar';
 
-import SearchIcon from '@mui/icons-material/Search';
+// MUI Icons
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
+
+// Local Components / Other
+import SettingsMenu from './SettingsMenu';
 
 export default function Navbar() {
   // Session & Router 
