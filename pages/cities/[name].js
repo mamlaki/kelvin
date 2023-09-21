@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getWeatherData } from '@/utils/api/weatherapi'
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
+import { toTitleCase } from '@/utils/toTitleCase'
+import { getWeathericon } from '@/utils/getWeatherIcon'
+import { countryCodeToFlag } from '@/utils/countryCodeToFlag'
+import { unixToTime } from '@/utils/unixToTime'
 import TemperatureMap from '@/components/TemperatureMap'
 
 import Container from '@mui/material/Container'
@@ -11,9 +15,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
-import CloudIcon from '@mui/icons-material/Cloud'
-import FlashOnIcon from '@mui/icons-material/FlashOn'
-import AcUnitIcon from '@mui/icons-material/AcUnit'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -29,33 +30,6 @@ export default function WeatherDetail() {
   
   const { defaultTempUnit } = useTempUnit()
   const [weatherData, setWeatherData] = useState(null)
-
-  const getWeathericon = (weatherId) => {
-    if (weatherId >= 200 && weatherId <= 232) {
-      return <FlashOnIcon style={{ color: 'yellow', fontSize: '3rem' }}/>
-    } else if (weatherId >= 300 && weatherId <= 321) {
-      return <AcUnitIcon style={{ color: 'blue', fontSize: '3rem' }} />
-    } else if (weatherId >= 500 && weatherId <= 531) {
-      return <CloudIcon style={{ color: 'gray', fontSize: '3rem' }} />
-    } else if (weatherId >= 800 && weatherId <= 801) {
-      return <WbSunnyIcon style={{ color: 'orange', fontSize: '3rem' }} />
-    } else {
-      return <CloudIcon style={{ color: 'gray', fontSize: '3rem' }} />
-    }
-  }
-
-  const toTitleCase = (str) => {
-    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-  }
-
-  const countryCodeToFlag = (countryCode) => {
-    return countryCode.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397))
-  }
-
-  const unixToTime = (unixTimeStamp) => {
-    const dateObject = new Date(unixTimeStamp * 1000)
-    return dateObject.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-  }
 
   useEffect(() => {
     if (name) {
