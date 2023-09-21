@@ -56,7 +56,7 @@ export default function WeatherDetail() {
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
         <TemperatureBox
-          icon={getWeathericon(weatherData.weather[0].id)}
+          icon={getWeathericon(weatherData.weather[0].id, '3rem')}
           temperature={`${convertTemp(weatherData.main.temp, defaultTempUnit)}º${defaultTempUnit}`}
           description={toTitleCase(weatherData.weather[0].description)}
           rawTemperature={convertTemp(weatherData.main.temp, defaultTempUnit)}
