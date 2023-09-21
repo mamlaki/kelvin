@@ -30,39 +30,37 @@ export default function WeatherCard({ data, onDelete }) {
   }
 
   return (
-    <Card style={{ maxWidth: '300px', width: '100%' }}>
+    <Card style={{ maxWidth: '300px', width: '100%' }} role='article' aria-label='Weather Card'>
       <CardContent>
         <Typography variant='h5' component='div'>
-          { data.name } { countryCodeToFlag(data.sys.country) }
+          { data.name } <span role='img' aria-label={`Flag of ${data.sys.country}`}>{ countryCodeToFlag(data.sys.country) }</span>
         </Typography>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          { getWeathericon(data.weather[0].id, '1.6rem') }
+          <span aria-hidden='true'>{ getWeathericon(data.weather[0].id, '1.6rem') }</span>
           <Typography variant='subtitle1' color='textSecondary'>
             { data.weather[0].description }
           </Typography>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={handleTempToggle}>
           <Typography 
             variant='h6'
-            component='span'
-            onClick={ handleTempToggle }
-            style={{ cursor: 'pointer' }}
+            component='button'
+            style={{ cursor: 'pointer', background: 'none', border: 'none' }}
+            aria-label={`Current temperature in ${data.name} is ${convertTemp(data.main.temp, localTempUnit)} degrees ${localTempUnit}. Click to toggle temperature unit.`}
           >
             {convertTemp(data.main.temp, localTempUnit)}º{localTempUnit}
           </Typography>
-          <IconButton size='small' onClick={handleTempToggle}>
+          <IconButton size='small' aria-label='Toggle temperature unit'>
             <DeviceThermostatIcon />
           </IconButton>
         </div>
       </CardContent>
       <CardActions>
-        <Button size='small' onClick={onDelete} color='error'>Unpin</Button>
+        <Button size='small' onClick={onDelete} color='error' aria-label='Unpin this weather card'>Unpin</Button>
         <Link href={`/cities/${data.name}`}>
-          
-            <Button size='small' color='primary'>
+            <Button size='small' color='primary' aria-label={`View detailed weather informationf or ${data.name}`}>
               Details
             </Button>
-          
         </Link>
       </CardActions>
     </Card>
