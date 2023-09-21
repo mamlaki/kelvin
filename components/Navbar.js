@@ -4,37 +4,32 @@ import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 
 // Contexts & Utils
-import cities from '../utils/jsondata/cities'
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
 import { useWeather } from '@/utils/contexts/WeatherContext';
 import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground';
 import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA';
 import { rgbToHex } from '@/utils/colorfuncs/rgbToHex';
-import { getWeatherData } from '@/utils/api/weatherapi';
-import { useDebounce } from '@/utils/useDebounce';
 
 // MUI Utils
 import { getLuminance } from '@mui/material';
 
 // MUI Components
 import AppBar from '@mui/material/AppBar';
-import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import TextField from '@mui/material/TextField'
 import Toolbar from '@mui/material/Toolbar';
 
 // MUI Icons
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 // Local Components / Other
 import SettingsMenu from './SettingsMenu';
+import Searchbar from './Searchbar';
 
 export default function Navbar() {
   // Session & Router 
@@ -56,17 +51,6 @@ export default function Navbar() {
 
   // Settings stateful variables
   const [settingsOpen, setSettingsOpen] = useState(false)
-
-  // Weather and city search stateful variables
-  const [searchTerm, setSearchTerm] = useState('')
-  const [suggestions, setSuggestions] = useState([])
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [enterKeyPressed, setEnterKeyPressed] = useState(false)
-  const [inputValue, setInputValue] = useState('')
-  const [isSuggestionSelected, setIsSuggestionSelected] = useState(false)
-  const [isSelectionMade, setIsSelectionMade] = useState(false)
-  
-  const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
   useEffect(() => {
     console.log('Updated weatherData: ', weatherData)
@@ -132,85 +116,6 @@ export default function Navbar() {
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget)
   const handleMenuClose = () => setAnchorEl(null)
 
-
-  const fetchWeatherData = async (cityName) => {
-    if (!cityName) {
-      console.log('Empty city name provided. Exiting fetchWeatherData')
-      return
-    }
-
-    console.log('Fetching weather data for: ', cityName)
-
-    if (router.pathname.startsWith('/cities/')) {
-      router.push(`/cities/${cityName}`)
-      return
-    }
-
-    if (weatherData.some(data => data.name === cityName)) {
-      console.log('City already added.')
-      return
-    }
-    setIsProcessing(true)
-
-    try {
-      const data = await getWeatherData(cityName)
-      console.log('Received data: ', data)
-      setWeatherData(prevWeatherData => [...prevWeatherData, data])
-      setSearchTerm('')
-    } catch (error) {
-      console.error('Failed to fetch weather: ', error)
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  let timeoutId
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      if (!isSuggestionSelected) {
-        timeoutId = setTimeout(() => {
-          fetchWeatherData(inputValue)
-        }, 100)
-      } else {
-        clearTimeout(timeoutId)
-      }
-
-      setIsSuggestionSelected(false)
-      setIsSelectionMade(false)
-    }
-  }
-
-  useEffect(() => {
-    if (enterKeyPressed && !isProcessing) {
-      console.log('Enter key Pressed: ', debouncedSearchTerm)
-      fetchWeatherData(debouncedSearchTerm)
-      setEnterKeyPressed(false)
-    }
-  }, [debouncedSearchTerm, enterKeyPressed, isProcessing])
-
-  // Search suggestions functionality
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchTerm) {
-        const filteredCities = Array.from(new Set(cities.filter(city => city.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 10)));
-        setSuggestions(filteredCities);
-      } else {
-        setSuggestions([]);
-      }
-    }, 100);
-  
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const handleSearchInputChange = (event) => {
-    const newInputValue = event.target.value
-    console.log('handleSearchInputChange: ', newInputValue)
-    setInputValue(event.target.value)
-    setSearchTerm(event.target.value)
-  }
-
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -262,57 +167,7 @@ export default function Navbar() {
             display: 'flex',
             justifyContent: { xs: 'flex-start', md: 'center' }
           }}>
-            <Autocomplete 
-              id='auto-complete'
-              autoComplete
-              options={suggestions.map((option) => option)}
-              renderInput={(params) => (
-                <TextField {...params}
-                  placeholder='Enter City'
-                  sx={{
-                    width: { xs: 300, md: 400 },
-                    backgroundColor: 'white',
-                    borderRadius: '24px',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '24px',
-                      bordercolor: 'rgba(0, 0, 0, 0.23'
-                    }
-                  }}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <SearchIcon />
-                        {params.InputProps.startAdornment}
-                      </>
-                    )
-                  }}
-                  onChange={handleSearchInputChange}
-                  onKeyDown={handleKeyPress}
-                />
-              )}
-              onInputChange={(event, newInputValue, reason) => {
-                console.log('onInputChange - newInputValue: ', newInputValue)
-                console.log('onInputChange - reason: ', reason)
-                if (reason === 'select-option' || reason === 'reset') {
-                  clearTimeout(timeoutId)
-                  fetchWeatherData(newInputValue)
-                  setIsSuggestionSelected(true)
-                  setIsSelectionMade(true)
-                } else {
-                  setIsSelectionMade(false)
-                }
-                setInputValue(newInputValue)
-                setSearchTerm(newInputValue)
-              }}
-              onKeyDown={(event) => {
-                if (isSuggestionSelected) {
-                  console.log('Selected value being fetched: ', inputValue)
-                  setIsSuggestionSelected(false)
-                  fetchWeatherData(inputValue)
-                }
-              }}
-            />
+            <Searchbar />
           </Box>
           <Box sx={{ display: { md: 'flex' } }}>
             <IconButton
