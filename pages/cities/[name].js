@@ -5,25 +5,18 @@ import { useTempUnit } from '@/utils/contexts/TempUnitContext'
 import { toTitleCase } from '@/utils/toTitleCase'
 import { getWeathericon } from '@/utils/getWeatherIcon'
 import { countryCodeToFlag } from '@/utils/countryCodeToFlag'
-import { unixToTime } from '@/utils/unixToTime'
 import TemperatureMap from '@/components/TemperatureMap'
 
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-
-import WbSunnyIcon from '@mui/icons-material/WbSunny'
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 import Forecast from '@/components/Forecast'
 import { convertTemp } from '@/utils/tempConverter'
 import TemperatureBox from './_subcomponents/TemperatureBox'
 import DetailCards from './_subcomponents/DetailCards'
 import TemperatureDetails from './_subcomponents/TemperatureDetails'
+import SunCard from './_subcomponents/SunCards'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -88,39 +81,10 @@ export default function WeatherDetail() {
         humidity={weatherData.main.humidity}
         windSpeed={weatherData.wind.speed}
       />
-      <Box sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        mt: { xs: 0, sm: 4}
-      }}>
-        <Card sx={{
-           m: 2, 
-           width: { xs: 440, sm: 200 }, 
-           background: 'linear-gradient(90deg, #FF7E5F, #FEB47B)', 
-           color: 'white'
-          }}>
-          <CardContent>
-            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, gap: '0.3rem'}}>Sunrise <WbSunnyIcon />:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
-              <Typography variant='h4'>{ unixToTime(weatherData.sys.sunrise) }<ArrowDropUpIcon /></Typography>
-            </Box>
-          </CardContent>
-        </Card>
-        <Card sx={{
-           m: 2, 
-           width: { xs: 440, sm: 200 }, 
-           background: 'linear-gradient(90deg, #5A7D9A, #243447)', 
-           color: 'white'
-          }}>
-          <CardContent>
-            <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, gap: '0.3rem'}}>Sunset <DarkModeIcon />:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
-              <Typography variant='h4'>{ unixToTime(weatherData.sys.sunset) }<ArrowDropDownIcon /></Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+      <SunCard 
+        sunrise={weatherData.sys.sunrise}
+        sunset={weatherData.sys.sunset}
+      />
       <Box sx={{
         display: 'flex',
         flexWrap: 'wrap',
