@@ -7,17 +7,12 @@ import { useTheme } from '@mui/material/styles'
 
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
-import WbSunnyIcon from '@mui/icons-material/WbSunny'
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 
-import { convertTemp } from '@/utils/tempConverter'
-import { formatTime } from '@/utils/timeUtils'
-import { isDayTime } from '@/utils/timeUtils'
+import ForecastItem from './ForecastItem'
 
 export default function Forecast({ cityName, tempUnit }) {
   const [forecastData, setForecastData] = useState([])
@@ -82,13 +77,9 @@ export default function Forecast({ cityName, tempUnit }) {
               whiteSpace: 'nowrap',
             }}
           >
-            {forecastData.map((day, index) => (
-            <Box key={index} sx={{ mx: 2, textAlign: 'center' }}>
-              <Typography variant='body1' fontWeight='bold' marginBottom={2}>{ formatTime(new Date(day.dt * 1000)) }</Typography>
-              <Typography variant='body1' marginBottom={2}>{ isDayTime(new Date(day.dt * 1000)) ? <WbSunnyIcon /> : <DarkModeIcon /> }</Typography>
-              <Typography variant='body1'>{ convertTemp(day.main.temp, tempUnit) }º</Typography>
-            </Box>
-          ))}
+            {forecastData.map((day, index) =>             
+              <ForecastItem key={index} data={day} tempUnit={tempUnit} />
+          )}
           </Box>
         </CardContent>
       </Card>
