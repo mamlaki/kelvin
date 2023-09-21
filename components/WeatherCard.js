@@ -1,20 +1,26 @@
+// React & Next.js Imports
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-import { convertTemp } from '@/utils/tempConverter'
-import { countryCodeToFlag } from '@/utils/countryCodeToFlag'
-import { getWeathericon } from '@/utils/getWeatherIcon'
+// Contexts & Utils
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
+import { countryCodeToFlag } from '@/utils/countryCodeToFlag'
+import { convertTemp } from '@/utils/tempConverter'
+import { getWeathericon } from '@/utils/getWeatherIcon'
 import { toggleTempUnit } from '@/utils/toggleTempUnit'
 
+// MUI Utils
 import { useTheme } from '@mui/material/styles'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
 
+// MUI Components
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+
+// MUI Icons
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
 
 export default function WeatherCard({ data, onDelete }) {
