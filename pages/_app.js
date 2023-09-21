@@ -11,6 +11,7 @@ import { TempUnitProvider } from '@/utils/contexts/TempUnitContext';
 import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles'
 import { ThemeProvider, useThemeMode } from '@/utils/contexts/ThemeContext'
 import { ColorThemeProvider } from '@/utils/contexts/ColorThemeContext';
+import { SnackbarProvider } from '@/utils/contexts/SnackbarContext';
 import lightTheme from '@/themes/lightTheme';
 import darkTheme from '@/themes/darkTheme';
 
@@ -19,7 +20,6 @@ import CssBaseline from '@mui/material/CssBaseline'
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
 
 function MainContext({ Component, pageProps }) {
   const { darkMode } = useThemeMode()
@@ -30,17 +30,19 @@ function MainContext({ Component, pageProps }) {
       <ColorThemeProvider>
         <WeatherProvider>
           <TempUnitProvider>
-            <Navbar />
-            <Box
-              display='flex'
-              flexDirection='column'
-              minHeight='100vh'
-            >
-              <Box flexGrow={1}>
-                <Component {...pageProps} />
+            <SnackbarProvider>
+              <Navbar />
+              <Box
+                display='flex'
+                flexDirection='column'
+                minHeight='100vh'
+              >
+                <Box flexGrow={1}>
+                  <Component {...pageProps} />
+                </Box>
+                <Footer />
               </Box>
-              <Footer />
-            </Box>
+            </SnackbarProvider>
           </TempUnitProvider>
         </WeatherProvider>
       </ColorThemeProvider>

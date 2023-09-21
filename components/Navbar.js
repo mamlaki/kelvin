@@ -5,6 +5,7 @@ import { signOut, useSession } from 'next-auth/react';
 
 // Contexts & Utils
 import { useColorTheme } from '@/utils/contexts/ColorThemeContext';
+import { useSnackbar } from '@/utils/contexts/SnackbarContext';
 import { useWeather } from '@/utils/contexts/WeatherContext';
 import { blendWithBackground } from '@/utils/colorfuncs/blendWithBackground';
 import { ensureRGBA } from '@/utils/colorfuncs/ensureRGBA';
@@ -38,11 +39,9 @@ export default function Navbar() {
   const { data: session } = useSession()
   const { weatherData, setWeatherData } = useWeather()
   const { colorTheme, setColorTheme } = useColorTheme()
+  const { snackBarOpen, snackBarMessage, openSnackbar, closeSnackbar} = useSnackbar()
+
   const [lastSessionState, setLastSessionState] = useState(null)
-  
-  // Snackbar stateful variables
-  const [snackBarOpen, setSnackBarOpen] = useState(false)
-  const [snackBarMessage, setSnackBarMessage] = useState('')
   const [initialLoad, setInitialLoad] = useState(true)
 
   // Menu stateful variables 
@@ -67,8 +66,7 @@ export default function Navbar() {
   }
 
   const handleSignOutClick = async () => {
-    setSnackBarMessage('Signing out...')
-    setSnackBarOpen(true)
+    openSnackbar('Signing out...')
     await signOut({ redirect: false, callbackUrl: '/' })
   }
 
@@ -76,7 +74,7 @@ export default function Navbar() {
     let timer
     if (snackBarOpen) {
       timer = setTimeout(() => {
-        setSnackBarOpen(false)
+        closeSnackbar()
         if (snackBarMessage === 'Signed out successfully') {
           router.push('/')
         }
@@ -96,15 +94,12 @@ export default function Navbar() {
         setLastSessionState(session)
 
         if (session) {
-          setSnackBarMessage('Signed in successfully')
+          openSnackbar('Signed in successfully')
         } else {
-          setSnackBarMessage('Signed out successfully')
+          openSnackbar('Signed out successfully')
         }
-
-        setSnackBarOpen(true)
       }
     }
-
     router.events.on('routeChangeComplete', handleRouteChange)
 
     return () => {
