@@ -7,6 +7,7 @@ import { getWeathericon } from '@/utils/getWeatherIcon'
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
 import { toggleTempUnit } from '@/utils/toggleTempUnit'
 
+import { useTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
@@ -18,7 +19,11 @@ import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
 
 export default function WeatherCard({ data, onDelete }) {
   const { defaultTempUnit: globalTempUnit } = useTempUnit()
+  const theme = useTheme()
+
   const [localTempUnit, setLocalTempUnit] = useState(globalTempUnit)
+
+  const isDarkMode = theme.palette.mode === 'dark'
 
   useEffect(() => {
     setLocalTempUnit(globalTempUnit)
@@ -45,7 +50,12 @@ export default function WeatherCard({ data, onDelete }) {
           <Typography 
             variant='h6'
             component='button'
-            style={{ cursor: 'pointer', background: 'none', border: 'none' }}
+            sx={{ 
+              cursor: 'pointer',
+              background: 'none', 
+              border: 'none',
+              color: isDarkMode ? '#E0E0E0' : undefined
+            }}
             aria-label={`Current temperature in ${data.name} is ${convertTemp(data.main.temp, localTempUnit)} degrees ${localTempUnit}. Click to toggle temperature unit.`}
           >
             {convertTemp(data.main.temp, localTempUnit)}º{localTempUnit}
