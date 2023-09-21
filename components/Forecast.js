@@ -16,6 +16,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 
 import { convertTemp } from '@/utils/tempConverter'
+import { formatTime } from '@/utils/timeUtils'
+import { isDayTime } from '@/utils/timeUtils'
 
 export default function Forecast({ cityName, tempUnit }) {
   const [forecastData, setForecastData] = useState([])
@@ -31,19 +33,6 @@ export default function Forecast({ cityName, tempUnit }) {
         .catch(error => console.error('Error fetching forecast data: ', error))
     }
   }, [cityName])
-
-  const formatTime = (date) => {
-    const hours = date.getHours()
-    const ampm = hours >= 12 ? 'PM' : 'AM'
-    let formattedHours = hours % 12
-    formattedHours = formattedHours ? formattedHours : 12
-    return `${formattedHours}${ampm}`
-  }
-
-  const isDayTime = (date) => {
-    const hours = date.getHours()
-    return hours > 6 && hours < 18
-  }
 
   return (
     <Box
