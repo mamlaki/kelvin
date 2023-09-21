@@ -5,6 +5,7 @@ import { convertTemp } from '@/utils/tempConverter'
 import { countryCodeToFlag } from '@/utils/countryCodeToFlag'
 import { getWeathericon } from '@/utils/getWeatherIcon'
 import { useTempUnit } from '@/utils/contexts/TempUnitContext'
+import { toggleTempUnit } from '@/utils/toggleTempUnit'
 
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -23,14 +24,9 @@ export default function WeatherCard({ data, onDelete }) {
     setLocalTempUnit(globalTempUnit)
   }, [globalTempUnit])
 
-  const toggleTempUnit = () => {
-    if (localTempUnit === 'C') {
-      setLocalTempUnit('F')
-    } else if (localTempUnit === 'F') {
-      setLocalTempUnit('K')
-    } else {
-      setLocalTempUnit('C')
-    }
+  const handleTempToggle = () => {
+    const nextTempUnit = toggleTempUnit(localTempUnit)
+    setLocalTempUnit(nextTempUnit)
   }
 
   return (
@@ -49,12 +45,12 @@ export default function WeatherCard({ data, onDelete }) {
           <Typography 
             variant='h6'
             component='span'
-            onClick={ toggleTempUnit }
+            onClick={ handleTempToggle }
             style={{ cursor: 'pointer' }}
           >
             {convertTemp(data.main.temp, localTempUnit)}º{localTempUnit}
           </Typography>
-          <IconButton size='small' onClick={toggleTempUnit}>
+          <IconButton size='small' onClick={handleTempToggle}>
             <DeviceThermostatIcon />
           </IconButton>
         </div>
