@@ -23,6 +23,7 @@ import Forecast from '@/components/Forecast'
 import { convertTemp } from '@/utils/tempConverter'
 import TemperatureBox from './_subcomponents/TemperatureBox'
 import DetailCards from './_subcomponents/DetailCards'
+import TemperatureDetails from './_subcomponents/TemperatureDetails'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -68,20 +69,11 @@ export default function WeatherDetail() {
           rawTemperature={convertTemp(weatherData.main.temp, defaultTempUnit)}
           unit={defaultTempUnit}
         />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', mt: '-1rem'}}>
-          <Typography variant='h5' sx={{
-            textAlign: 'center',
-            mt: 2
-          }}>
-            H: { convertTemp(weatherData.main.temp_max, defaultTempUnit) }º
-          </Typography>
-          <Typography variant='h5' sx={{
-            textAlign: 'center',
-            mt: 2
-          }}>
-            L: { convertTemp(weatherData.main.temp_min, defaultTempUnit) }º
-          </Typography>
-        </Box>
+        <TemperatureDetails 
+          maxTemp={weatherData.main.temp_max}
+          minTemp={weatherData.main.temp_min}
+          tempUnit={defaultTempUnit}
+        />
       </Box>
       <Box sx={{
         display: 'flex',
