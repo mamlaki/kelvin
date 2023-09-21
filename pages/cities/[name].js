@@ -20,6 +20,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 import Forecast from '@/components/Forecast'
 import { convertTemp } from '@/utils/tempConverter'
+import TemperatureBox from './_subcomponents/TemperatureBox'
+import DetailCards from './_subcomponents/DetailCards'
 
 export default function WeatherDetail() {
   const router = useRouter()
@@ -55,27 +57,6 @@ export default function WeatherDetail() {
     return dateObject.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
   }
 
-  const getBackgroundByTemp = (temperature, unit = 'C') => {
-    let temp = temperature
-
-    if (unit === 'F') {
-      temp = (temp - 32) * 5 / 9
-    }
-
-    if (unit === 'K') {
-      temp = temp - 273.15
-    }
-
-    if (temp >= 25) {
-      return 'linear-gradient(45deg, #FF4500, #FF8C00)'
-    } else if (temp >= 15) {
-      return 'linear-gradient(45deg, #3CB371, #20B2AA)'
-    } else {
-      return 'linear-gradient(45deg, #1E90FF, #00008B)'
-    }
-
-  }
-
   useEffect(() => {
     if (name) {
       getWeatherData(name)
@@ -106,32 +87,13 @@ export default function WeatherDetail() {
         { weatherData.name } { countryCodeToFlag(weatherData.sys.country) }
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', m: 2, p: 2, gap: 1 }}>
-          <Typography variant='h2' sx={{ textAlign: 'center', mt: 2 }}>
-            { getWeathericon(weatherData.weather[0].id) }
-          </Typography>
-          <Typography variant='h2' fontWeight='bold' sx={{
-            background: getBackgroundByTemp(convertTemp(weatherData.main.temp, defaultTempUnit), defaultTempUnit),
-            backgroundClip: 'text',
-            textFillColor: 'transparent'
-          }}>
-            { 
-              convertTemp(weatherData.main.temp, defaultTempUnit) 
-            }
-            º
-            { 
-              defaultTempUnit 
-            }
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.6rem', mt: '-2rem' }}>
-          <Typography variant='h5' sx={{
-            textAlign: 'center',
-            mt: 2
-          }}>
-            { toTitleCase(weatherData.weather[0].description) }        
-          </Typography>
-        </Box>
+        <TemperatureBox
+          icon={getWeathericon(weatherData.weather[0].id)}
+          temperature={`${convertTemp(weatherData.main.temp, defaultTempUnit)}º${defaultTempUnit}`}
+          description={toTitleCase(weatherData.weather[0].description)}
+          rawTemperature={convertTemp(weatherData.main.temp, defaultTempUnit)}
+          unit={defaultTempUnit}
+        />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', mt: '-1rem'}}>
           <Typography variant='h5' sx={{
             textAlign: 'center',
@@ -155,45 +117,11 @@ export default function WeatherDetail() {
       }}>
         <Forecast cityName={weatherData.name} tempUnit={defaultTempUnit} />
       </Box>
-      <Box sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        mt: 4
-      }}>
-        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
-          <CardContent>
-            <Typography variant='h6'>Feels Like:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>
-                {
-                  convertTemp(weatherData.main.feels_like, defaultTempUnit)
-                }
-                º
-                {
-                  defaultTempUnit
-                }  
-              </Typography>      
-            </Box>
-          </CardContent>
-        </Card>
-        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
-          <CardContent>
-            <Typography variant='h6'>Humidity:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>{ weatherData.main.humidity }%</Typography>
-            </Box>
-          </CardContent>
-        </Card>
-        <Card sx={{ m: 2, width: { xs: 440, sm: 200 }, textAlign: { xs: 'center', sm: 'left' } }}> 
-          <CardContent>
-            <Typography variant='h6'>Wind Speed:</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant='h4' sx={{ margin: { xs: '0 auto', sm: '0 0' } }}>{ weatherData.wind.speed } m/s</Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+      <DetailCards 
+        feelsLike={convertTemp(weatherData.main.feels_like, defaultTempUnit)}
+        humidity={weatherData.main.humidity}
+        windSpeed={weatherData.wind.speed}
+      />
       <Box sx={{
         display: 'flex',
         flexWrap: 'wrap',
