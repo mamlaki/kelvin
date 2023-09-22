@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react';
 
 import TempUnitSelector from './TempUnitSelector';
 import ColorThemeSelector from './ColorThemeSelector';
+import DarkModeSwitch from './DarkModeSwitch';
 
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
   const { data: session } = useSession()
@@ -29,7 +30,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
 
   const DEFAULT_TEMP_UNIT = 'C'
   const DEFAULT_DARK_MODE = false
-  
+  const DEFAULT_COLOR_THEME = '#4994EC'
   const DEFAULT_RECENT_COLORS = []
 
   const saveSettingsToBackend = async () => {
@@ -169,23 +170,14 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     >
     <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
       <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
-       <TempUnitSelector 
-        defaultTempUnit={defaultTempUnit}
-        setDefaultTempUnit={setDefaultTempUnit}
-       />
-        <Box mt={2}>
-          <Box display='flex' alignItems='flex-end' gap={1}>
-            <DarkModeIcon />
-            <Typography varaint='subtitle1' sx={{ mt: 2 }}>Dark Mode</Typography>
-          </Box>
-            <Switch 
-              checked={darkMode}
-              onChange={toggleDarkMode}
-              name='darkMode'
-              color='primary' 
-              sx={{ marginLeft: '-10px' }}
-            />
-        </Box>
+        <TempUnitSelector 
+          defaultTempUnit={defaultTempUnit}
+          setDefaultTempUnit={setDefaultTempUnit}
+        />
+        <DarkModeSwitch 
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
         <ColorThemeSelector 
           colorTheme={colorTheme}
           setColorTheme={setColorTheme}
