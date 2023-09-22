@@ -14,6 +14,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle';
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
 
 // Local Components / Other
 import TempUnitSelector from './TempUnitSelector';
@@ -29,6 +31,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const [recentColors, setRecentColors] = useState([])
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [unsavedChangesDialogOpen, setUnsavedChangesDialogOpen] = useState(false)
+  const [changes, setChanges] = useState([])
 
   const settingsRef = useRef(null);
 
@@ -182,6 +185,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           <TempUnitSelector 
             defaultTempUnit={defaultTempUnit}
             setDefaultTempUnit={(newUnit) => {
+              const change = {
+                settings: 'Temperature Unit',
+                oldValue: defaultTempUnit,
+                newValue: newUnit
+              }
+              setChanges(prev => [...prev, change])
               setHasUnsavedChanges(true)
               setDefaultTempUnit(newUnit)
             }}
@@ -189,6 +198,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           <DarkModeSwitch 
             darkMode={darkMode}
             toggleDarkMode={() => {
+              const change = {
+                settings: 'Dark Mode',
+                oldValue: darkMode ? 'On' : 'Off',
+                newValue: !darkMode ? 'On' : 'Off'
+              }
+              setChanges(prev => [...prev, change])
               setHasUnsavedChanges(true)
               toggleDarkMode()
             }}
@@ -200,6 +215,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
             recentColors={recentColors}
             setRecentColors={setRecentColors}
             onColorChange={(newColor) => {
+              const change = {
+                settings: 'Color Theme',
+                oldValue: colorTheme,
+                newValue: newColor
+              }
+              setChanges(prev => [...prev, change])
               setHasUnsavedChanges(true)
             }}
           />
@@ -226,11 +247,19 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         <DialogTitle id='unsaved-changes-dialog-title'>Unsaved Changes</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            You have unsaved changes. Would you like to save before exiting?
+            You have unsaved changes:
+            <List>
+              {changes.map((change, index) => (
+                <ListItem key={index}>
+                  {change.settings} was changed from {change.oldValue} to {change.newValue}.
+                </ListItem>
+              ))}
+            </List>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => {
+            setChanges([])
             setUnsavedChangesDialogOpen(false)
             handleSettingsToggle()
           }} color='secondary'>
@@ -238,6 +267,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           </Button>
           <Button onClick={() => {
             saveSettingsToBackend()
+            setChanges([])
             setUnsavedChangesDialogOpen(false)
             handleSettingsToggle()
           }} color='primary' autoFocus>
