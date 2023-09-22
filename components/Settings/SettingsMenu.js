@@ -1,19 +1,20 @@
+// React & Next.js Imports
 import { useState, useRef, useEffect } from 'react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+
+// Contexts & Utils
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 
+// MUI Components
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box'
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { useSession } from 'next-auth/react';
 
+// Local Components / Other
 import TempUnitSelector from './TempUnitSelector';
 import ColorThemeSelector from './ColorThemeSelector';
 import DarkModeSwitch from './DarkModeSwitch';
