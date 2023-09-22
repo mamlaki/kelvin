@@ -11,7 +11,7 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
-import Forecast from '@/components/Forecast'
+import Forecast from '@/components/Forecast/Forecast'
 import { convertTemp } from '@/utils/tempConverter'
 import TemperatureBox from './_subcomponents/TemperatureBox'
 import DetailCards from './_subcomponents/DetailCards'
