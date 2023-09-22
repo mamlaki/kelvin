@@ -16,32 +16,6 @@ const DynamicTileLayer = dynamic(
   { ssr: false }
 )
 
-const DynamicMarker = dynamic(
-  () => import('react-leaflet').then((mod) => {
-    const L = require('leaflet')
-
-    const icon = new L.Icon({
-      iconUrl: '/leaflet/images/marker-icon.png',
-      iconRetinaUrl: '/leaflet/images/marker-icon-2x.png',
-      shadowUrl: '/leaflet/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    })
-
-    const DynamicIconMarker = (props) => <mod.Marker {...props} icon={icon} />
-    return DynamicIconMarker
-  }),
-
-  { ssr: false }
-)
-
-const DynamicPopup = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Popup),
-  { ssr: false }
-)
-
 const DynamicMapUpdater = dynamic(
   () => import('./MapUpdater'),
   { ssr: false }
