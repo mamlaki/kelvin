@@ -28,7 +28,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 // Local Components / Other
 import SettingsMenu from './SettingsMenu';
-import Searchbar from './Searchbar';
+import Searchbar from './Searchbar/Searchbar';
 import UserMenu from './UserMenu';
 
 export default function Navbar() {

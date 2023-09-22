@@ -1,9 +1,8 @@
 import Autocomplete from '@mui/material/Autocomplete'
-import TextField from '@mui/material/TextField'
-
-import SearchIcon from '@mui/icons-material/Search'
 
 import { useSearchLogic } from '@/utils/hooks/useSearchLogic'
+
+import SearchInput from './SearchInput'
 
 export default function Search() {  
   const {
@@ -26,26 +25,7 @@ export default function Search() {
       autoComplete
       options={suggestions.map((option) => option)}
       renderInput={(params) => (
-        <TextField {...params}
-          placeholder='Enter City'
-          sx={{
-            width: { xs: 300, md: 400 },
-            backgroundColor: 'white',
-            borderRadius: '24px',
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '24px',
-              bordercolor: 'rgba(0, 0, 0, 0.23'
-            }
-          }}
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: (
-              <>
-                <SearchIcon />
-                {params.InputProps.startAdornment}
-              </>
-            )
-          }}
+        <SearchInput {...params}
           onChange={handleSearchInputChange}
           onKeyDown={handleKeyPress}
         />
