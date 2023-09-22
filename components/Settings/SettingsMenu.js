@@ -1,21 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 import { rgbaStringToObject } from '@/utils/colorfuncs/rgbaStringToObject';
-import WrappedColorPicker from './CustomColorPicker/CustomColorPicker';
+import WrappedColorPicker from '../CustomColorPicker/CustomColorPicker';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import Switch from '@mui/material/Switch';
-import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box'
 
@@ -23,14 +18,13 @@ import ColorLensIcon from '@mui/icons-material/ColorLens'
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useSession } from 'next-auth/react';
 
+import TempUnitSelector from './TempUnitSelector';
+
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
-  const router = useRouter()
   const { data: session } = useSession()
 
   const { defaultTempUnit, setDefaultTempUnit } = useTempUnit()
   const { darkMode, toggleDarkMode } = useThemeMode()
-
-  const [isInitialized, setIsInitialized] = useState(false)
 
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [previewColor, setPreviewColor] = useState({
@@ -234,20 +228,10 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     >
     <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
       <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
-        <FormControl fullWidth variant='outlined' sx={{ mt: 2 }}>
-          <InputLabel id='default-temp-unit-label'>Default Temperature Unit</InputLabel>
-          <Select
-            labelId='default-temp-unit-label'
-            id='default-temp-unit'
-            value={defaultTempUnit}
-            onChange={(event) => setDefaultTempUnit(event.target.value)}
-            label='Default Temperature Unit'
-          >
-            <MenuItem value={'C'}>Celsius</MenuItem>
-            <MenuItem value={'F'}>Fahrenheit</MenuItem>
-            <MenuItem value={'K'}>Kelvin</MenuItem>
-          </Select>
-        </FormControl>
+       <TempUnitSelector 
+        defaultTempUnit={defaultTempUnit}
+        setDefaultTempUnit={setDefaultTempUnit}
+       />
         <Box mt={2}>
           <Box display='flex' alignItems='flex-end' gap={1}>
             <DarkModeIcon />

@@ -27,7 +27,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 // Local Components / Other
-import SettingsMenu from './SettingsMenu';
+import SettingsMenu from './Settings/SettingsMenu';
 import Searchbar from './Searchbar/Searchbar';
 import UserMenu from './UserMenu';
 
