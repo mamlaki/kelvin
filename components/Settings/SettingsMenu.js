@@ -29,10 +29,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   
   const settingsRef = useRef(null);
 
-  const DEFAULT_TEMP_UNIT = 'C'
-  const DEFAULT_DARK_MODE = false
-  const DEFAULT_COLOR_THEME = '#4994EC'
-  const DEFAULT_RECENT_COLORS = []
+  const DEFAULTS = {
+    TEMP_UNIT: 'C',
+    DARK_MODE: false,
+    COLOR_THEME: '#4994EC',
+    RECENT_COLORS: []
+  }
 
   const saveSettingsToBackend = async () => {
     if (!session) {
@@ -45,10 +47,10 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     }
 
     const settingsData = {
-      defaultTempUnit: defaultTempUnit,
-      darkMode: darkMode,
-      colorTheme: colorTheme,
-      recentColors: recentColors,
+      defaultTempUnit: defaultTempUnit || DEFAULTS.TEMP_UNIT,
+      darkMode: darkMode || DEFAULTS.DARK_MODE,
+      colorTheme: colorTheme || DEFAULTS.COLOR_THEME,
+      recentColors: recentColors || DEFAULTS.RECENT_COLORS,
       userId: session.user.id 
     }
 
@@ -95,22 +97,22 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     const savedColortheme = localStorage.getItem('colorTheme')
     const savedRecentColors = JSON.parse(localStorage.getItem('recentColors') || '[]')
 
-    setDefaultTempUnit(savedDefaultTempUnit || DEFAULT_TEMP_UNIT)
-    toggleDarkMode(savedDarkMode || DEFAULT_DARK_MODE)
-    setColorTheme(savedColortheme || DEFAULT_COLOR_THEME)
-    setRecentColors(savedRecentColors || DEFAULT_RECENT_COLORS)
+    setDefaultTempUnit(savedDefaultTempUnit || DEFAULTS.TEMP_UNIT)
+    toggleDarkMode(savedDarkMode || DEFAULTS.DARK_MODE)
+    setColorTheme(savedColortheme || DEFAULTS.COLOR_THEME)
+    setRecentColors(savedRecentColors || DEFAULTS.RECENT_COLORS)
   }
 
   const resetToDefaults = () => {
-    setDefaultTempUnit(DEFAULT_TEMP_UNIT)
-    toggleDarkMode(DEFAULT_DARK_MODE)
-    setColorTheme(DEFAULT_COLOR_THEME)
-    setRecentColors(DEFAULT_RECENT_COLORS)
+    setDefaultTempUnit(DEFAULTS.TEMP_UNIT)
+    toggleDarkMode(DEFAULTS.DARK_MODE)
+    setColorTheme(DEFAULTS.COLOR_THEME)
+    setRecentColors(DEFAULTS.RECENT_COLORS)
 
-    localStorage.setItem('defaultTempUnit', DEFAULT_TEMP_UNIT)
-    localStorage.setItem('darkMode', JSON.stringify(DEFAULT_DARK_MODE))
-    localStorage.setItem('colorTheme', DEFAULT_COLOR_THEME)
-    localStorage.setItem('recentColors', JSON.stringify(DEFAULT_RECENT_COLORS))
+    localStorage.setItem('defaultTempUnit', DEFAULTS.TEMP_UNIT)
+    localStorage.setItem('darkMode', JSON.stringify(DEFAULTS.DARK_MODE))
+    localStorage.setItem('colorTheme', DEFAULTS.COLOR_THEME)
+    localStorage.setItem('recentColors', JSON.stringify(DEFAULTS.RECENT_COLORS))
   }
 
   useEffect(() => {
