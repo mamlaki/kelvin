@@ -41,6 +41,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     COLOR_THEME: '#4994EC',
     RECENT_COLORS: []
   }
+  const [originalSettings, setOriginalSettings] = useState({
+    defaultTempUnit: null,
+    darkMode: null,
+    colorTheme: null,
+    recentColors: null
+  })
 
   const saveSettingsToBackend = async () => {
     if (!session) {
@@ -89,6 +95,13 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         if (typeof data.darkMode !== 'undefined') toggleDarkMode(data.darkMode)
         if (data.colorTheme) setColorTheme(data.colorTheme)
         if (Array.isArray(data.recentColors)) setRecentColors(data.recentColors);
+
+        setOriginalSettings({
+          defaultTempUnit: data.defaultTempUnit || DEFAULTS.TEMP_UNIT,
+          darkMode: data.darkMode || DEFAULTS.DARK_MODE,
+          colorTheme: data.colorTheme || DEFAULTS.COLOR_THEME,
+          recentColors: data.recentColors || DEFAULTS.RECENT_COLORS
+        })
       } else {
         loadSettingsFromLocalStorage();
       }
@@ -102,6 +115,13 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     const savedDarkMode = JSON.parse(localStorage.getItem('darkMode') || false)
     const savedColortheme = localStorage.getItem('colorTheme')
     const savedRecentColors = JSON.parse(localStorage.getItem('recentColors') || '[]')
+
+    setOriginalSettings({
+      defaultTempUnit: savedDefaultTempUnit || DEFAULTS.TEMP_UNIT,
+      darkMode: savedDarkMode || DEFAULTS.DARK_MODE,
+      colorTheme: savedColortheme || DEFAULTS.COLOR_THEME,
+      recentColors: savedRecentColors || DEFAULTS.RECENT_COLORS
+    })
 
     setDefaultTempUnit(savedDefaultTempUnit || DEFAULTS.TEMP_UNIT)
     toggleDarkMode(savedDarkMode || DEFAULTS.DARK_MODE)
@@ -119,6 +139,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   useEffect(() => {
     if (session) {
       fetchAndApplyUserSettings(session.user.id)
+      setOriginalSettings({
+        defaultTempUnit: defaultTempUnit,
+        darkMode: dark,
+        colorTheme: colorTheme,
+        recentColors: recentColors
+      })
     } else {
       loadSettingsFromLocalStorage()
     }
@@ -259,6 +285,10 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         </DialogContent>
         <DialogActions>
           <Button onClick={() => {
+            setDefaultTempUnit(originalSettings.defaultTempUnit)
+            toggleDarkMode(originalSettings.darkMode)
+            setColorTheme(originalSettings.colorTheme)
+            setRecentColors(originalSettings.recentColors)
             setChanges([])
             setUnsavedChangesDialogOpen(false)
             handleSettingsToggle()
