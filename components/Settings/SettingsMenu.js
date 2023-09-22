@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle';
 
 // Local Components / Other
@@ -27,6 +28,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
 
   const [recentColors, setRecentColors] = useState([])
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [unsavedChangesDialogOpen, setUnsavedChangesDialogOpen] = useState(false)
 
   const settingsRef = useRef(null);
 
@@ -157,67 +159,92 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   return (
-    <Dialog
-      open={settingsOpen}
-      onClose={() => {
-        if (hasUnsavedChanges) {
-          const wantsToSave = window.confirm('You have unsaved. Would you like to save before exiting?')
-          if (wantsToSave) {
+    <>
+      <Dialog
+        open={settingsOpen}
+        onClose={() => {
+          if (hasUnsavedChanges) {
+            setUnsavedChangesDialogOpen(true)
+          } else {
+            handleSettingsToggle()
+          }
+        }}
+        ref={settingsRef}
+        aria-labelledby='settings-dialog-title'
+        maxWidth='lg'
+        fullWidth={true}
+        PaperProps={{
+          sx: { width: '80%'}
+        }}
+      >
+      <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
+        <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
+          <TempUnitSelector 
+            defaultTempUnit={defaultTempUnit}
+            setDefaultTempUnit={(newUnit) => {
+              setHasUnsavedChanges(true)
+              setDefaultTempUnit(newUnit)
+            }}
+          />
+          <DarkModeSwitch 
+            darkMode={darkMode}
+            toggleDarkMode={() => {
+              setHasUnsavedChanges(true)
+              toggleDarkMode()
+            }}
+          />
+          <ColorThemeSelector 
+            colorTheme={colorTheme}
+            setColorTheme={setColorTheme}
+            darkMode={darkMode}
+            recentColors={recentColors}
+            setRecentColors={setRecentColors}
+            onColorChange={(newColor) => {
+              setHasUnsavedChanges(true)
+            }}
+          />
+          {session && (
+            <Box sx={{ mt: 4 }}>
+              <Button onClick={handleDeleteAccount} color='secondary' variant='contained'>Delete Account</Button>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button onClick={resetToDefaults} color='primary'>
+            Default Settings
+          </Button>
+          <Button onClick={handleSaveAndExit} color='success' variant='contained'>
+            Save & Exit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={unsavedChangesDialogOpen}
+        onClose={() => setUnsavedChangesDialogOpen(false)}
+        aria-labelledby='unsaved-changes-dialog-title'
+      >
+        <DialogTitle id='unsaved-changes-dialog-title'>Unsaved Changes</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have unsaved changes. Would you like to save before exiting?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setUnsavedChangesDialogOpen(false)
+            handleSettingsToggle()
+          }} color='secondary'>
+            Discard Changes
+          </Button>
+          <Button onClick={() => {
             saveSettingsToBackend()
-          } 
-          handleSettingsToggle()
-        } else {
-          handleSettingsToggle()
-        }
-      }}
-      ref={settingsRef}
-      aria-labelledby='settings-dialog-title'
-      maxWidth='lg'
-      fullWidth={true}
-      PaperProps={{
-        sx: { width: '80%'}
-      }}
-    >
-    <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
-      <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
-        <TempUnitSelector 
-          defaultTempUnit={defaultTempUnit}
-          setDefaultTempUnit={(newUnit) => {
-            setHasUnsavedChanges(true)
-            setDefaultTempUnit(newUnit)
-          }}
-        />
-        <DarkModeSwitch 
-          darkMode={darkMode}
-          toggleDarkMode={() => {
-            setHasUnsavedChanges(true)
-            toggleDarkMode()
-          }}
-        />
-        <ColorThemeSelector 
-          colorTheme={colorTheme}
-          setColorTheme={setColorTheme}
-          darkMode={darkMode}
-          recentColors={recentColors}
-          setRecentColors={setRecentColors}
-          onColorChange={(newColor) => {
-            setHasUnsavedChanges(true)
-          }}
-        />
-        {session && (
-          <Box sx={{ mt: 4 }}>
-            <Button onClick={handleDeleteAccount} color='secondary' variant='contained'>Delete Account</Button>
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button onClick={resetToDefaults} color='primary'>
-          Default Settings
-        </Button>
-        <Button onClick={handleSaveAndExit} color='success' variant='contained'>
-          Save & Exit
-        </Button>
-      </DialogActions>
-    </Dialog>
+            setUnsavedChangesDialogOpen(false)
+            handleSettingsToggle()
+          }} color='primary' autoFocus>
+            Save & Exit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }

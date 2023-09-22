@@ -16,7 +16,6 @@ export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode
     rgb: {r: 0, g: 0, b: 0, a: 1}
   });
   const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
-  const settingsRef = useRef(null);
   const colorPickerRef = useRef();
 
   const DEFAULT_COLOR_THEME = '#4994EC'
@@ -58,9 +57,6 @@ export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode
 
   const handleClickOutside = (event) => {
     if (colorPickerRef.current && !colorPickerRef.current.contains(event.target)) {
-      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
-        handleSettingsToggle()
-      }
       setDisplayColorPicker(false)
     }
   }
