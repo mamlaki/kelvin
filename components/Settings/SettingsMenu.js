@@ -108,11 +108,6 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     toggleDarkMode(DEFAULTS.DARK_MODE)
     setColorTheme(DEFAULTS.COLOR_THEME)
     setRecentColors(DEFAULTS.RECENT_COLORS)
-
-    localStorage.setItem('defaultTempUnit', DEFAULTS.TEMP_UNIT)
-    localStorage.setItem('darkMode', JSON.stringify(DEFAULTS.DARK_MODE))
-    localStorage.setItem('colorTheme', DEFAULTS.COLOR_THEME)
-    localStorage.setItem('recentColors', JSON.stringify(DEFAULTS.RECENT_COLORS))
   }
 
   useEffect(() => {
