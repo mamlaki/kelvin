@@ -130,10 +130,22 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   const resetToDefaults = () => {
+    if (defaultTempUnit !== DEFAULTS.TEMP_UNIT) {
+      setChanges(prev => [...prev, { settings: 'Temperature Unit', oldValue: defaultTempUnit, newValue: DEFAULTS.TEMP_UNIT }])
+    }
+    if (darkMode !== DEFAULTS.DARK_MODE) {
+      setChanges(prev => [...prev, {settings: 'Dark Mode', oldValue: darkMode ? 'On' : 'Off', newValue: DEFAULTS.DARK_MODE ? 'On' : 'Off'}])
+    }
+    if (colorTheme !== DEFAULTS.COLOR_THEME) {
+      setChanges(prev => [...prev, { settings: 'Color Theme', oldValue: colorTheme, newValue: DEFAULTS.COLOR_THEME }])
+    }
+
     setDefaultTempUnit(DEFAULTS.TEMP_UNIT)
     toggleDarkMode(DEFAULTS.DARK_MODE)
     setColorTheme(DEFAULTS.COLOR_THEME)
     setRecentColors(DEFAULTS.RECENT_COLORS)
+
+    setHasUnsavedChanges(true)
   }
 
   useEffect(() => {
