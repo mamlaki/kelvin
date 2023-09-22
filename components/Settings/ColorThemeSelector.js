@@ -9,7 +9,7 @@ import { Typography } from "@mui/material";
 
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 
-export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode, recentColors, setRecentColors }) {
+export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode, recentColors, setRecentColors, onColorChange }) {
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [previewColor, setPreviewColor] = useState({
     hex: colorTheme,
@@ -42,6 +42,7 @@ export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode
     const rgbaColor = convertRGBtoRGBAString(color.rgb)
     setColorTheme(rgbaColor)
     setRecentColors(prevColors => [rgbaColor, ...prevColors].slice(0, 10))
+    if (props.onColorChange) props.onColorChange(rgbaColor)
   }
 
   const handleRecentColorClick = (color) => {

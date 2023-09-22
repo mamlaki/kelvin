@@ -26,7 +26,8 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const { darkMode, toggleDarkMode } = useThemeMode()
 
   const [recentColors, setRecentColors] = useState([])
-  
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
   const settingsRef = useRef(null);
 
   const DEFAULTS = {
@@ -120,6 +121,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
 
   const handleSaveAndExit = () => {
     saveSettingsToBackend()
+    setHasUnsavedChanges(false)
     handleSettingsToggle()
   }
   
@@ -157,7 +159,17 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   return (
     <Dialog
       open={settingsOpen}
-      onClose={handleSettingsToggle}
+      onClose={() => {
+        if (hasUnsavedChanges) {
+          const wantsToSave = window.confirm('You have unsaved. Would you like to save before exiting?')
+          if (wantsToSave) {
+            saveSettingsToBackend()
+          } 
+          handleSettingsToggle()
+        } else {
+          handleSettingsToggle()
+        }
+      }}
       ref={settingsRef}
       aria-labelledby='settings-dialog-title'
       maxWidth='lg'
@@ -170,11 +182,17 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
         <TempUnitSelector 
           defaultTempUnit={defaultTempUnit}
-          setDefaultTempUnit={setDefaultTempUnit}
+          setDefaultTempUnit={(newUnit) => {
+            setHasUnsavedChanges(true)
+            setDefaultTempUnit(newUnit)
+          }}
         />
         <DarkModeSwitch 
           darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
+          toggleDarkMode={() => {
+            setHasUnsavedChanges(true)
+            toggleDarkMode()
+          }}
         />
         <ColorThemeSelector 
           colorTheme={colorTheme}
@@ -182,6 +200,9 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           darkMode={darkMode}
           recentColors={recentColors}
           setRecentColors={setRecentColors}
+          onColorChange={(newColor) => {
+            setHasUnsavedChanges(true)
+          }}
         />
         {session && (
           <Box sx={{ mt: 4 }}>
