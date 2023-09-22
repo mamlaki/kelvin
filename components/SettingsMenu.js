@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/react';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 import { rgbaStringToObject } from '@/utils/colorfuncs/rgbaStringToObject';
-import WrappedColorPicker from './CustomColorPicker';
+import WrappedColorPicker from './CustomColorPicker/CustomColorPicker';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
