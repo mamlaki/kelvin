@@ -153,7 +153,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       fetchAndApplyUserSettings(session.user.id)
       setOriginalSettings({
         defaultTempUnit: defaultTempUnit,
-        darkMode: dark,
+        darkMode: darkMode,
         colorTheme: colorTheme,
         recentColors: recentColors
       })
