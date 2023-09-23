@@ -301,14 +301,14 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         <DialogContent>
           <DialogContentText>
             You have unsaved changes:
-            <List>
-              {changes.map((change, index) => (
-                <ListItem key={index}>
-                  {change.settings} was changed from {change.oldValue} to {change.newValue}.
-                </ListItem>
-              ))}
-            </List>
           </DialogContentText>
+          <List>
+            {changes.map((change, index) => (
+              <ListItem key={index}>
+                {change.settings} was changed from {change.oldValue} to {change.newValue}.
+              </ListItem>
+            ))}
+          </List>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => {
