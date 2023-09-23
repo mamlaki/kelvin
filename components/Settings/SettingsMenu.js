@@ -65,6 +65,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       localStorage.setItem('darkMode', JSON.stringify(darkMode))
       localStorage.setItem('colorTheme', colorTheme)
       localStorage.setItem('recentColors', JSON.stringify(recentColors))
+      setOriginalSettings({
+        defaultTempUnit: defaultTempUnit,
+        darkMode: darkMode,
+        colorTheme: colorTheme,
+        recentColors: recentColors
+      })
       alert('Settings saved locally. login to save settings across devices.')
       return
     }
@@ -90,7 +96,13 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         const responseData = await response.json()
         throw new Error(responseData.message || 'Failed to save settings.')
       }
-      setChanges([])
+      setOriginalSettings({
+        defaultTempUnit: defaultTempUnit,
+        darkMode: darkMode,
+        colorTheme: colorTheme,
+        recentColors: recentColors
+      })
+      setHasUnsavedChanges(false)
       alert('Settings saved successfully!')
     } catch (error) {
       console.error('Failed to save settings: ', error)
@@ -323,10 +335,9 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
             Discard Changes
           </Button>
           <Button onClick={() => {
-            saveSettingsToBackend()
             setChanges([])
             setUnsavedChangesDialogOpen(false)
-            handleSettingsToggle()
+            handleSaveAndExit()
           }} color='primary' autoFocus>
             Save & Exit
           </Button>
