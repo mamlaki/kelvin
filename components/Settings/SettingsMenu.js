@@ -6,6 +6,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { deleteUserFromAPI } from '@/pages/api/settingsAPI';
 import { fetchUserSettingsFromAPI } from '@/pages/api/settingsAPI';
 import { saveSettingsToAPI } from '@/pages/api/settingsAPI';
+import { saveSettingsToLocalStorage, fetchSettingsFromLocalStorage } from '@/utils/localStorageUtils';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 
@@ -61,38 +62,27 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }, [defaultTempUnit, darkMode, colorTheme, recentColors])
 
   const saveSettingsToBackend = async () => {
-    if (!session) {
-      localStorage.setItem('defaultTempUnit', defaultTempUnit)
-      localStorage.setItem('darkMode', JSON.stringify(darkMode))
-      localStorage.setItem('colorTheme', colorTheme)
-      localStorage.setItem('recentColors', JSON.stringify(recentColors))
-      setOriginalSettings({
-        defaultTempUnit: defaultTempUnit,
-        darkMode: darkMode,
-        colorTheme: colorTheme,
-        recentColors: recentColors
-      })
-      alert('Settings saved locally. login to save settings across devices.')
-      return
-    }
-
     const settingsData = {
       defaultTempUnit: defaultTempUnit || DEFAULTS.TEMP_UNIT,
       darkMode: darkMode || DEFAULTS.DARK_MODE,
       colorTheme: colorTheme || DEFAULTS.COLOR_THEME,
       recentColors: recentColors || DEFAULTS.RECENT_COLORS,
-      userId: session.user.id 
+    }
+
+    if (!session) {
+      saveSettingsToLocalStorage(settingsData)
+      setOriginalSettings(settingsData)
+      alert('Settings saved locally. login to save settings across devices.')
+      return
     }
 
     try {
-      await saveSettingsToAPI(settingsData)
-      
-      setOriginalSettings({
-        defaultTempUnit: defaultTempUnit,
-        darkMode: darkMode,
-        colorTheme: colorTheme,
-        recentColors: recentColors
+      await saveSettingsToAPI({
+        ...settingsData,
+        userId: session.user.id
       })
+      
+      setOriginalSettings(settingsData)
       setHasUnsavedChanges(false)
       alert('Settings saved successfully!')
     } catch (error) {
@@ -125,22 +115,14 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   }
 
   const loadSettingsFromLocalStorage = () => {
-    const savedDefaultTempUnit = localStorage.getItem('defaultTempUnit')
-    const savedDarkMode = JSON.parse(localStorage.getItem('darkMode') || false)
-    const savedColortheme = localStorage.getItem('colorTheme')
-    const savedRecentColors = JSON.parse(localStorage.getItem('recentColors') || '[]')
+    const settings = fetchSettingsFromLocalStorage(DEFAULTS)
 
-    setOriginalSettings({
-      defaultTempUnit: savedDefaultTempUnit || DEFAULTS.TEMP_UNIT,
-      darkMode: savedDarkMode || DEFAULTS.DARK_MODE,
-      colorTheme: savedColortheme || DEFAULTS.COLOR_THEME,
-      recentColors: savedRecentColors || DEFAULTS.RECENT_COLORS
-    })
+    setOriginalSettings(settings)
 
-    setDefaultTempUnit(savedDefaultTempUnit || DEFAULTS.TEMP_UNIT)
-    toggleDarkMode(savedDarkMode || DEFAULTS.DARK_MODE)
-    setColorTheme(savedColortheme || DEFAULTS.COLOR_THEME)
-    setRecentColors(savedRecentColors || DEFAULTS.RECENT_COLORS)
+    setDefaultTempUnit(settings.defaultTempUnit)
+    toggleDarkMode(settings.darkMode)
+    setColorTheme(settings.colorTheme)
+    setRecentColors(settings.recentColors)
   }
 
   const resetToDefaults = () => {
