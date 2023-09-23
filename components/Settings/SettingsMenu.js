@@ -48,6 +48,17 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     recentColors: null
   })
 
+  const checkUnsavedChanges = () => {
+    const changesExist = defaultTempUnit !== originalSettings.defaultTempUnit ||
+      darkMode !== originalSettings.darkMode || colorTheme !== originalSettings.colorTheme ||
+      JSON.stringify(recentColors) !== JSON.stringify(originalSettings.recentColors)
+    setHasUnsavedChanges(changesExist)
+  }
+
+  useEffect(() => {
+    checkUnsavedChanges()
+  }, [defaultTempUnit, darkMode, colorTheme, recentColors])
+
   const saveSettingsToBackend = async () => {
     if (!session) {
       localStorage.setItem('defaultTempUnit', defaultTempUnit)
@@ -79,6 +90,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         const responseData = await response.json()
         throw new Error(responseData.message || 'Failed to save settings.')
       }
+      setChanges([])
       alert('Settings saved successfully!')
     } catch (error) {
       console.error('Failed to save settings: ', error)
@@ -272,7 +284,10 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           <Button onClick={resetToDefaults} color='primary'>
             Default Settings
           </Button>
-          <Button onClick={handleSaveAndExit} color='success' variant='contained'>
+          <Button onClick={() => {
+            setChanges([])
+            handleSaveAndExit()
+          }} color='success' variant='contained'>
             Save & Exit
           </Button>
         </DialogActions>
