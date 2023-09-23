@@ -41,7 +41,7 @@ export default function ColorThemeSelector({ colorTheme, setColorTheme, darkMode
     const rgbaColor = convertRGBtoRGBAString(color.rgb)
     setColorTheme(rgbaColor)
     setRecentColors(prevColors => [rgbaColor, ...prevColors].slice(0, 10))
-    if (props.onColorChange) props.onColorChange(rgbaColor)
+    if (onColorChange) onColorChange(rgbaColor)
   }
 
   const handleRecentColorClick = (color) => {
