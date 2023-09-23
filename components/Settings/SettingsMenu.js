@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 
 // Contexts & Utils
+import { fetchUserSettingsFromAPI } from '@/pages/api/settingsAPI';
 import { saveSettingsToAPI } from '@/pages/api/settingsAPI';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
@@ -100,9 +101,8 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
 
   const fetchAndApplyUserSettings = async (userId) => {
     try {
-      const response = await fetch(`/api/getSettings?userId=${userId}`)
-      const data = await response.json()
-
+      const data = await fetchUserSettingsFromAPI(userId)
+      
       if (data) {
         if (data.defaultTempUnit) setDefaultTempUnit(data.defaultTempUnit)
         if (typeof data.darkMode !== 'undefined') toggleDarkMode(data.darkMode)

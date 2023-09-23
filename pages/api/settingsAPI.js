@@ -19,4 +19,19 @@ const saveSettingsToAPI = async (settings) => {
   }
 }
 
-export { saveSettingsToAPI }
+const fetchUserSettingsFromAPI = async (userId) => {
+  try {
+    const response = await fetch(`/api/getSettings?userId=${userId}`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user settings with status: ${response.status}`)
+    }
+
+    return response.json()
+  } catch (error) {
+    console.error('API call failed: ', error)
+    throw error
+  }
+}
+
+export { saveSettingsToAPI, fetchUserSettingsFromAPI }
