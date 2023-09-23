@@ -21,6 +21,6 @@ export const ensureRGBA = (color) => {
   } else if (color && 'r' in color && 'g' in color && 'b' in color) {
     return color
   }
-
+  console.log(color)
   throw new Error('Invalid color format')
 }

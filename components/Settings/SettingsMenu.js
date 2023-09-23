@@ -12,15 +12,13 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle';
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
 
 // Local Components / Other
-import TempUnitSelector from './TempUnitSelector';
 import ColorThemeSelector from './ColorThemeSelector';
 import DarkModeSwitch from './DarkModeSwitch';
+import TempUnitSelector from './TempUnitSelector';
+import UnsavedChangesDialog from './UnsavedChangesDialog';
 
 export default function SettingsMenu({ settingsOpen, handleSettingsToggle, colorTheme, setColorTheme }) {
   const { data: session } = useSession()
@@ -304,45 +302,25 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog
+      <UnsavedChangesDialog 
         open={unsavedChangesDialogOpen}
         onClose={() => setUnsavedChangesDialogOpen(false)}
-        aria-labelledby='unsaved-changes-dialog-title'
-      >
-        <DialogTitle id='unsaved-changes-dialog-title'>Unsaved Changes</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have unsaved changes:
-          </DialogContentText>
-          <List>
-            {changes.map((change, index) => (
-              <ListItem key={index}>
-                {change.settings} was changed from {change.oldValue} to {change.newValue}.
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => {
-            setDefaultTempUnit(originalSettings.defaultTempUnit)
-            toggleDarkMode(originalSettings.darkMode)
-            setColorTheme(originalSettings.colorTheme)
-            setRecentColors(originalSettings.recentColors)
-            setChanges([])
-            setUnsavedChangesDialogOpen(false)
-            handleSettingsToggle()
-          }} color='secondary'>
-            Discard Changes
-          </Button>
-          <Button onClick={() => {
-            setChanges([])
-            setUnsavedChangesDialogOpen(false)
-            handleSaveAndExit()
-          }} color='primary' autoFocus>
-            Save & Exit
-          </Button>
-        </DialogActions>
-      </Dialog>
+        changes={changes}
+        onDiscardChanges={() => {
+          setDefaultTempUnit(originalSettings.defaultTempUnit)
+          toggleDarkMode(originalSettings.darkMode)
+          setColorTheme(originalSettings.colorTheme)
+          setRecentColors(originalSettings.recentColors)
+          setChanges([])
+          setUnsavedChangesDialogOpen(false)
+          handleSettingsToggle()
+        }}
+        onSaveAndExit={() => {
+          setChanges([])
+          setUnsavedChangesDialogOpen(false)
+          handleSaveAndExit()
+        }}
+      />
     </>
   )
 }
