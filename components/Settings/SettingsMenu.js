@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 
 // Contexts & Utils
+import { saveSettingsToAPI } from '@/pages/api/settingsAPI';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
 import { useThemeMode } from '@/utils/contexts/ThemeContext';
 
@@ -82,18 +83,8 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     }
 
     try {
-      const response = await fetch('/api/updateSettings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(settingsData)
-      })
-
-      if (!response.ok) {
-        const responseData = await response.json()
-        throw new Error(responseData.message || 'Failed to save settings.')
-      }
+      await saveSettingsToAPI(settingsData)
+      
       setOriginalSettings({
         defaultTempUnit: defaultTempUnit,
         darkMode: darkMode,
