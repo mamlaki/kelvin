@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 
 // Contexts & Utils
+import { deleteUserFromAPI } from '@/pages/api/settingsAPI';
 import { fetchUserSettingsFromAPI } from '@/pages/api/settingsAPI';
 import { saveSettingsToAPI } from '@/pages/api/settingsAPI';
 import { useTempUnit } from '@/utils/contexts/TempUnitContext';
@@ -102,7 +103,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const fetchAndApplyUserSettings = async (userId) => {
     try {
       const data = await fetchUserSettingsFromAPI(userId)
-      
+
       if (data) {
         if (data.defaultTempUnit) setDefaultTempUnit(data.defaultTempUnit)
         if (typeof data.darkMode !== 'undefined') toggleDarkMode(data.darkMode)
@@ -183,21 +184,12 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   
   const deleteUser = async () => {
     try {
-      const response = await fetch(`/api/deleteUser?userId=${session.user.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: session.user.id })
-      })
+      const isSuccess = await deleteUserFromAPI(session.user.id)
 
-      if (response.ok) {
+      if (isSuccess) {
         alert('Your account was successfully deleted.')
         handleSettingsToggle()
-        await signOut({ redirect: false, callbackUrl: '/' })
-      } else {
-        const data = await response.json()
-        throw new Error(data.message || 'Failed to delete account.')
+        await signOut({ redirect: true, callbackUrl: '/' })
       }
     } catch (error) {
       console.error('Error deleting user account: ', error)

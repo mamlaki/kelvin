@@ -34,4 +34,26 @@ const fetchUserSettingsFromAPI = async (userId) => {
   }
 }
 
-export { saveSettingsToAPI, fetchUserSettingsFromAPI }
+const deleteUserFromAPI = async (userId) => {
+  try {
+    const response = await fetch(`/api/deleteUser?userId=${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ userId })
+    })
+
+    if (response.ok) {
+      return true
+    } else {
+      const responseData = await response.json()
+      throw new Error(responseData.message || 'Failed to delete user.')
+    }
+  } catch (error) {
+    console.error('Error in deleteUserFromAPI: ', error)
+    throw error
+  }
+}
+
+export { saveSettingsToAPI, fetchUserSettingsFromAPI, deleteUserFromAPI }
