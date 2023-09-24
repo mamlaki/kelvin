@@ -37,6 +37,9 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
   const { darkMode, toggleDarkMode } = useThemeMode()
 
   const settingsRef = useRef(null);
+  const audioRef = useRef(null)
+
+  const errorSound = '/alert_error.mp3'
 
   const [recentColors, setRecentColors] = useState([])
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -213,6 +216,18 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
 
   const messageLines = alertMessage.split('.').filter(line => line.trim() !== '')
 
+  useEffect(() => {
+    audioRef.current = new Audio(errorSound)
+    audioRef.current.volume = 0.3
+    audioRef.current.preload = 'auto'
+  }, [])
+
+  const playErrorSound = () => {
+    if (audioRef.current) {
+      audioRef.current.play()
+    }
+  }
+
   return (
     <>
         <Snackbar
@@ -336,6 +351,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
         open={unsavedChangesDialogOpen}
         onClose={(event, reason) =>  {
           if (reason === 'backdropClick') {
+            playErrorSound()
             return
           } else if (reason === 'escapeKeyDown') {
             handleDiscardChanges()
