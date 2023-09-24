@@ -18,7 +18,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton'
 import Snackbar from '@mui/material/Snackbar'
+
+// MUI Icons
+import CloseIcon from '@mui/icons-material/Close';
 
 // Local Components / Other
 import ColorThemeSelector from './ColorThemeSelector';
@@ -241,7 +245,22 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
           sx: { width: '80%'}
         }}
       >
-        <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
+        <DialogTitle id='settings-dialog-title' sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          Settings
+          <IconButton
+            edge='end'
+            color='inherit'
+            onClick={() => {
+              if (hasUnsavedChanges) {
+                setUnsavedChangesDialogOpen(true)
+              } else {
+                handleSettingsToggle()
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent sx={{ minHeight: 400, position: 'relative' }}>
           <TempUnitSelector 
             defaultTempUnit={defaultTempUnit}
