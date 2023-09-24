@@ -201,6 +201,16 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     }
   }
 
+  const handleDiscardChanges = () => {
+    setDefaultTempUnit(originalSettings.defaultTempUnit)
+    toggleDarkMode(originalSettings.darkMode)
+    setColorTheme(originalSettings.colorTheme)
+    setRecentColors(originalSettings.recentColors)
+    setChanges([])
+    setUnsavedChangesDialogOpen(false)
+    handleSettingsToggle()
+  }
+
   const messageLines = alertMessage.split('.').filter(line => line.trim() !== '')
 
   return (
@@ -324,17 +334,16 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
       </Dialog>
       <UnsavedChangesDialog 
         open={unsavedChangesDialogOpen}
-        onClose={() => setUnsavedChangesDialogOpen(false)}
-        changes={changes}
-        onDiscardChanges={() => {
-          setDefaultTempUnit(originalSettings.defaultTempUnit)
-          toggleDarkMode(originalSettings.darkMode)
-          setColorTheme(originalSettings.colorTheme)
-          setRecentColors(originalSettings.recentColors)
-          setChanges([])
+        onClose={(event, reason) =>  {
+          if (reason === 'backdropClick') {
+            return
+          } else if (reason === 'escapeKeyDown') {
+            handleDiscardChanges()
+          }
           setUnsavedChangesDialogOpen(false)
-          handleSettingsToggle()
         }}
+        changes={changes}
+        onDiscardChanges={handleDiscardChanges}
         onSaveAndExit={() => {
           setChanges([])
           setUnsavedChangesDialogOpen(false)
