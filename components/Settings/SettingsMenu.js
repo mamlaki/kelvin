@@ -208,7 +208,7 @@ export default function SettingsMenu({ settingsOpen, handleSettingsToggle, color
     setRecentColors(originalSettings.recentColors)
     setChanges([])
     setUnsavedChangesDialogOpen(false)
-    handleSettingsToggle()
+    showAlertHelper('Your changes have been discarded.', 'info')
   }
 
   const messageLines = alertMessage.split('.').filter(line => line.trim() !== '')
