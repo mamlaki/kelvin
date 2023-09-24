@@ -51,13 +51,27 @@ export default function Home() {
                     direction='column'
                     alignItems='center'
                     justifyContent='center'
-                    // style={{ minHeight: '100vh' }}
+                    textAlign='center'
+                    sx={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      '&::before': {
+                          content: '"😔"',
+                          position: 'absolute',
+                          top: '400%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          fontSize: '6rem',
+                          opacity: 0.3,
+                          filter: 'grayscale(100%)',
+                          zIndex: -1,
+                      }
+                    }}
                   >
                     <Grid item xs={12}>
                       <Typography variant='h6'>No cities added yet</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant='h6'>😔</Typography>
+                      <Typography variant='h6'>Use the search bar above to start adding cities</Typography>
                     </Grid>
                   </Grid>
                 )
